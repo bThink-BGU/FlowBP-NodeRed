@@ -1,0 +1,37 @@
+{
+  "name": "testoryflow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node packages/node_modules/node-red/red.js",
+    "test": "grunt",
+    "build": "grunt build",
+    "dev": "grunt dev",
+    "build-dev": "grunt build-dev"
+  },
+  "dependencies": {
+    "ansi-to-html": "^0.7.0",
+    "deep-equal": "^2.0.5",
+    "denque": "^1.5.0",
+    "grunt-contrib-jshint": "^3.0.0",
+    "node-red": "file:packages/node_modules/node-red"
+  },
+  "devDependencies": {
+    "grunt": "^1.4.1",
+    "grunt-cli": "~1.4.2",
+    "grunt-concurrent": "^3.0.0",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-uglify": "~4.0.1",
+    "grunt-contrib-watch": "~1.1.0",
+    "grunt-mkdir": "~1.1.0",
+    "grunt-npm-command": "~0.1.2",
+    "nodemon": "2.0.7",
+    "should": "13.2.3"
+  },
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=8"
+  }
+}
