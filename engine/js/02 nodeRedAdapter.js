@@ -33,12 +33,14 @@ RED.nodeRedAdapter = {
   },
 
   receiveMessage: function () {
-    return JSON.parse(this.inStream.readLine());
+    let line = this.inStream.readLine();
+    bp.log.info('received: ' + line);
+    return JSON.parse(line);
   },
 
   updateToken: function (n, token, add) {
     this.sendMessage(this.Message(this.EngineMessageTypes.STATE, {id: n.id, add: add, token: token}))
-    java.lang.Thread.sleep(500)
+    return this.receiveMessage()
   },
 
   Message: function (type, payload) {
