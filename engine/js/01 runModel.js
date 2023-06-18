@@ -134,6 +134,17 @@ function execute(node, token) {
           return [cloneToken, undefined]
         }
 
+      case "if-then-else":
+        if (node.condition) {
+          let condition = node.condition.replace(/tkn\./g, 'cloneToken.')
+          if (eval(condition)) {  // "3333+1" -> 3334
+            return [cloneToken, undefined]
+          } else {
+            return [undefined, cloneToken]
+          }
+        }
+
+
       //-----------------------------------------------------------------------
       // bsync
       //-----------------------------------------------------------------------
