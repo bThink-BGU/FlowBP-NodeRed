@@ -34,7 +34,7 @@ RED.nodeRedAdapter = {
 
   receiveMessage: function () {
     let line = this.inStream.readLine();
-    bp.log.info('received: ' + line);
+    // bp.log.info('received: ' + line);
     return JSON.parse(line);
   },
 
