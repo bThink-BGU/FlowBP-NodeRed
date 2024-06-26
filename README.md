@@ -15,6 +15,10 @@
    
        cd FlowBP-NodeRed
        npm install
+3. Fix permissions:
+   ```bash
+   chmod +x ./engine/bpjs.sh
+   ```
 
 ## Running
 
