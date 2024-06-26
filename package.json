@@ -18,7 +18,7 @@
     "node-red": "file:packages/node_modules/node-red"
   },
   "devDependencies": {
-    "grunt": "^1.4.1",
+    "grunt": "^1.6.1",
     "grunt-cli": "~1.4.2",
     "grunt-concurrent": "^3.0.0",
     "grunt-contrib-clean": "^2.0.0",
