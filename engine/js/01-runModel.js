@@ -24,9 +24,6 @@ for (let n of model.config.flows) {
     if (n.type == "start") {
       let token = n.payload || "{}";
       n.token = token;
-      if (RED.nodeRedAdapter) {
-        RED.nodeRedAdapter.updateToken(n, JSON.parse(token), true);
-      }
       starts.push(n);
     }
   }
@@ -34,10 +31,14 @@ for (let n of model.config.flows) {
 //-------------------------------------------------------------------------------
 // Initial spawn
 //-------------------------------------------------------------------------------
-
-for (let n of starts) {
-  spawn_bthread(n, JSON.parse(n.token));
-}
+bthread("initial", function() {
+  for (let n of starts) {
+    if (RED.nodeRedAdapter) {
+      RED.nodeRedAdapter.updateToken(n, JSON.parse(n.token), true);
+    }
+    spawn_bthread(n, JSON.parse(n.token));
+  }
+})
 
 //-------------------------------------------------------------------------------
 // Each b-thread follows a path and spawns new b-threads when the path splits.

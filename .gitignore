@@ -236,5 +236,5 @@ package-lock.json
 packages/node_modules/@bp/nodes/generated
 /engine/js/report/
 /engine/js/run-logs/
-/engine/js/00 amodel*.js
+/engine/js/00-amodel*.js
 /engine/js/*.EventDef*.js
