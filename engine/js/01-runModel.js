@@ -136,11 +136,11 @@ function execute(node, token) {
       let group = groups.get(node.g)
 
       group.rwbi.block.map(id => nodes.get(id)).forEach(n => {
-        bp.thread.data.block.push(defaultEventDefinition(n, cloneToken))
+        bp.thread.data.block.push(defaultEventSetDefinition(n, cloneToken))
         block++
       });
       group.rwbi.waitFor.map(id => nodes.get(id)).forEach(n => {
-        bp.thread.data.waitFor.push(defaultEventDefinition(n, cloneToken))
+        bp.thread.data.waitFor.push(defaultEventSetDefinition(n, cloneToken))
         waitFor++
       });
       group.rwbi.request.map(id => nodes.get(id)).forEach(n => {
@@ -148,7 +148,7 @@ function execute(node, token) {
         request++
       });
       group.rwbi.interrupt.map(id => nodes.get(id)).forEach(n => {
-        bp.thread.data.interrupt.push(defaultEventDefinition(n, cloneToken))
+        bp.thread.data.interrupt.push(defaultEventSetDefinition(n, cloneToken))
         interrupt++
       });
     }
