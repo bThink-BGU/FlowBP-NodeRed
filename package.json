@@ -5,7 +5,7 @@
   "main": "packages/node_modules/node-red/red.js",
   "scripts": {
     "start": "node packages/node_modules/node-red/red.js",
-    "build-nodes": "node ./packages/node_modules/@bp/node-generator/build.js",
+    "generate-nodes": "node ./packages/node_modules/@bp/node-generator/build.js",
     "test": "grunt",
     "build": "grunt build",
     "dev": "supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",

@@ -9,6 +9,7 @@ function cloneToken(token) {
 
 var nodes = new Map();
 var starts = [];
+var contextStarts = [];
 var disabledTabs = [];
 var groups = new Map();
 
@@ -28,6 +29,12 @@ for (let n of model.config.flows) {
       let token = n.payload || "{}";
       n.token = token;
       starts.push(n);
+    } else if (n.type == "context-start") {
+      if (!n.context || n.context==="") {
+        bp.log.warn("context-start node must have a context")
+        // throw new Error("context-start node must have a context")
+      }
+      contextStarts.push(n);
     }
   }
 }
