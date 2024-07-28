@@ -14,8 +14,9 @@
  * limitations under the License.
  **/
 
-var path = require("path");
-var fs = require("fs-extra");
+const path = require("path");
+const fs = require("fs-extra");
+const nodemon = require('nodemon');
 
 module.exports = function (grunt) {
 
@@ -47,7 +48,13 @@ module.exports = function (grunt) {
     paths: {
       dist: ".dist"
     },
-    watch: {
+    watch: {/*
+      server: {
+        files: ['.rebooted'],
+        options: {
+          livereload: true
+        }
+      },*/
       generator: {
         files: [
           'packages/node_modules/@bp/node-generator/**/*'
@@ -58,12 +65,19 @@ module.exports = function (grunt) {
         files: [
           'packages/node_modules/**/*.js',
           '!packages/node_modules/@bp/node-generator/**/*',
+          '!packages/node_modules/@bp/nodes/generated/**/*',
           'engine/js/01 runModel.js',
           'engine/js/02 nodeRedAdapter.js',
           'engine/js/03 nodeRedUtil.js'
         ],
         tasks: ['build']
       },
+      /*generatedNodes: {
+        files: [
+          'packages/node_modules/@bp/nodes/generated/!**!/!*',
+        ],
+        tasks: ['restart-node-red']
+      },*/
       json: {
         files: [
           'packages/node_modules/@bp/nodes/locales/**/*.json',
@@ -71,13 +85,13 @@ module.exports = function (grunt) {
         tasks: ['jsonlint:messages']
       },
     },
-    mkdir: {
+    /*mkdir: {
       core: {
         options: {
           create: ['packages/node_modules/@bp/nodes/generated']
         },
       },
-    },
+    },*/
     clean: {
       build: {
         src: []
@@ -86,10 +100,6 @@ module.exports = function (grunt) {
         src: [
           '<%= paths.dist %>'
         ]
-      },
-      generated: {
-        // src: ['node packages/node_modules/@bp/node-generator']
-        src: ['packages/node_modules/@bp/nodes/generated']
       },
     },
     uglify: {
@@ -114,11 +124,13 @@ module.exports = function (grunt) {
       dev: {
         script: 'packages/node_modules/node-red/red.js',
         options: {
+          verbose: true,
           args: nodemonArgs,
           ext: 'js,html,json',
-          // legacyWatch: true,
+          ignore: ['packages/node_modules/@bp/nodes/generated/**/*'],
+          legacyWatch: true,
           watch: [
-            'packages/node_modules/'
+            'packages/node_modules/**/*',
           ]
         }
       }
@@ -140,30 +152,6 @@ module.exports = function (grunt) {
       all: {
         files: {
           src: ['packages/node_modules/@bp/**/*.js']
-        }
-      },
-      // core: {
-      //     files: {
-      //         src: [
-      //             'Gruntfile.js',
-      //             'red.js',
-      //             'packages/**/*.js',
-      //         ]
-      //     }
-      // },
-      nodes: {
-        files: {
-          src: ['packages/node_modules/@bp/nodes/**/*.js']
-        }
-      },
-      engineAdapter: {
-        files: {
-          src: ['packages/node_modules/@bp/engine-adapter/**/*.js']
-        }
-      },
-      nodeGenerator: {
-        files: {
-          src: ['packages/node_modules/@bp/node-generator/**/*.js']
         }
       },
       tests: {
@@ -201,13 +189,12 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-npm-command');
-  grunt.loadNpmTasks('grunt-mkdir');
+  // grunt.loadNpmTasks('grunt-mkdir');
 
-  grunt.registerMultiTask('nodemon', 'Runs a nodemon monitor of your node.js server.', function () {
-    const nodemon = require('nodemon');
+  grunt.registerTask('nodemon', 'Run nodemon', function () {
     this.async();
-    const options = this.options();
-    options.script = this.data.script;
+    const options = grunt.config.get('nodemon.dev.options');
+    options.script = grunt.config.get('nodemon.dev.script');
     let callback;
     if (options.callback) {
       callback = options.callback;
@@ -219,7 +206,9 @@ module.exports = function (grunt) {
         });
       };
     }
-    callback(nodemon(options));
+    let app = nodemon(options);
+    callback(app);
+    app.emit('restart');
   });
 
   grunt.registerTask('generateNodes', 'Generate nodes', function () {
@@ -243,7 +232,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build',
     'Builds editor content',
-    ['clean:build', 'mkdir:core', 'uglify:build']);
+    ['clean:build', 'uglify:build']);
 
   grunt.registerTask('build-with-generate-nodes',
     'Builds editor content',
@@ -252,4 +241,12 @@ module.exports = function (grunt) {
   grunt.registerTask('dev',
     'Developer mode: run node-red, watch for source changes and build/restart',
     ['generateNodes', 'build', 'setDevEnv', 'concurrent:dev']);
+
+  grunt.registerTask('restart-node-red',
+    'Restart node-red',
+    function () {
+      nodemon.emit('restart');
+      nodemon.restart();
+      nodemon.reset();
+    });
 };

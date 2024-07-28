@@ -2,13 +2,22 @@
   "name": "bp-flow",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "packages/node_modules/node-red/red.js",
   "scripts": {
     "start": "node packages/node_modules/node-red/red.js",
+    "build-nodes": "node ./packages/node_modules/@bp/node-generator/build.js",
     "test": "grunt",
     "build": "grunt build",
-    "dev": "grunt dev",
+    "dev": "nodemon -V packages/node_modules/node-red/red.js",
     "build-dev": "grunt build-dev"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "packages/node_modules/@bp/nodes/generated"
+    ],
+    "ext": "js,html,json",
+    "ignore": [],
+    "delay": 3
   },
   "dependencies": {
     "ansi-to-html": "^0.7.0",
@@ -26,7 +35,6 @@
     "grunt-contrib-watch": "~1.1.0",
     "grunt-mkdir": "~1.1.0",
     "grunt-npm-command": "~0.1.2",
-    "nodemon": "2.0.7",
     "should": "13.2.3"
   },
   "author": "",
