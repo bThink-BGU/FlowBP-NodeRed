@@ -8,16 +8,8 @@
     "build-nodes": "node ./packages/node_modules/@bp/node-generator/build.js",
     "test": "grunt",
     "build": "grunt build",
-    "dev": "nodemon -V packages/node_modules/node-red/red.js",
+    "dev": "supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",
     "build-dev": "grunt build-dev"
-  },
-  "nodemonConfig": {
-    "watch": [
-      "packages/node_modules/@bp/nodes/generated"
-    ],
-    "ext": "js,html,json",
-    "ignore": [],
-    "delay": 3
   },
   "dependencies": {
     "ansi-to-html": "^0.7.0",
@@ -35,7 +27,8 @@
     "grunt-contrib-watch": "~1.1.0",
     "grunt-mkdir": "~1.1.0",
     "grunt-npm-command": "~0.1.2",
-    "should": "13.2.3"
+    "should": "13.2.3",
+    "supervisor": "^0.12.0"
   },
   "author": "",
   "license": "ISC",
