@@ -10,6 +10,7 @@ function cloneToken(token) {
 var nodes = new Map();
 var starts = [];
 var contextStarts = [];
+var contextInit = null;
 var disabledTabs = [];
 var groups = new Map();
 
@@ -26,15 +27,20 @@ for (let n of model.config.flows) {
     n.inNodes = new Set();
     nodes.set(n.id, n)
     if (n.type == "start") {
-      let token = n.payload || "{}";
-      n.token = token;
+      n.token = n.payload || "{}";
       starts.push(n);
     } else if (n.type == "context-start") {
       if (!n.context || n.context==="") {
-        bp.log.warn("context-start node must have a context")
+        bp.log.warn("context must be defined for context-start nodes")
         // throw new Error("context-start node must have a context")
       }
       contextStarts.push(n);
+    } else if (n.type == "context-init") {
+      if(contextInit) {
+        throw new Error("There can only be one context-init node")
+      }
+      contextInit = n.template;
+      eval(contextInit)
     }
   }
 }
