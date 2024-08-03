@@ -7,6 +7,11 @@ function cloneToken(token) {
   return token
 }
 
+function deepCloneToken(token) {
+  return JSON.parse(JSON.stringify(token))
+  // return token
+}
+
 var nodes = new Map();
 var starts = [];
 var contextStarts = [];
@@ -31,8 +36,7 @@ for (let n of model.config.flows) {
       starts.push(n);
     } else if (n.type == "context-start") {
       if (!n.context || n.context==="") {
-        bp.log.warn("context must be defined for context-start nodes")
-        // throw new Error("context-start node must have a context")
+        throw new Error("The context property must be defined for context-start nodes")
       }
       contextStarts.push(n);
     } else if (n.type == "context-init") {
@@ -45,7 +49,7 @@ for (let n of model.config.flows) {
   }
 }
 
-// init nodes inNodes
+// init inNodes
 for (let n of nodes.values()) {
   if (n.wires) {
     for (let port of n.wires) {
@@ -63,7 +67,7 @@ for (let n of model.config.flows) {
   }
 }
 
-// init nodes inGroups
+// init inGroups
 for (let g of groups.values()) {
   g.rwbi = { request: [], waitFor: [], block: [], interrupt: [] }
   for (let id of g.nodes) {
@@ -96,13 +100,14 @@ bthread("initial", function () {
     }
     spawn_bthread(n, JSON.parse(n.token));
   }
+
+  for (let n of contextStarts) {
+    spawn_cbt(n);
+  }
 })
 
-//-------------------------------------------------------------------------------
-// Each b-thread follows a path and spawns new b-threads when the path splits.
-//-------------------------------------------------------------------------------
-function spawn_bthread(node, token) {
-  bthread("flow", function () {
+function spawn_helper(node, token) {
+  return function () {
     do {
       let tokens = execute(node, token) //[{sdfsdf},undefined]  [undefined,{sdfsdf}]
       if (RED.nodeRedAdapter) {
@@ -132,7 +137,24 @@ function spawn_bthread(node, token) {
         }
       }
     } while (token)
+  }
+}
+
+function spawn_cbt(node) {
+  ctx.bthread("ctx-flow", node.context, function (entity) {
+    let token = { context: { name: node.context, entity: entity } }
+    if (RED.nodeRedAdapter) {
+      RED.nodeRedAdapter.updateToken(node, token, true);
+    }
+    spawn_helper(node, token)()
   })
+}
+
+//-------------------------------------------------------------------------------
+// Each b-thread follows a path and spawns new b-threads when the path splits.
+//-------------------------------------------------------------------------------
+function spawn_bthread(node, token) {
+  bthread("flow", deepCloneToken(bp.thread.data), spawn_helper(node, token))
 }
 
 
@@ -170,8 +192,8 @@ function execute(node, token) {
       // Start
       //-----------------------------------------------------------------------
       case "start":
+      case "context-start":
         return [cloneToken]
-
       case "switch":
         return switchNode(node, cloneToken)
       case "log":
