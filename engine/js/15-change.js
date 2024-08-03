@@ -325,7 +325,6 @@ RED.nodesHandlers.change = function (n, msg) {
   }
 
   applyRules(msg, 0, (err, msg) => {
-    bp.log.info('err=${0};msg=${1}', err, msg)
     if (err) {
       throw err;
     }

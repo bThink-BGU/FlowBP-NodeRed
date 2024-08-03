@@ -110,7 +110,6 @@ function spawn_helper(node, token) {
   return function () {
     do {
       let tokens = execute(node, token) //[{sdfsdf},undefined]  [undefined,{sdfsdf}]
-      bp.log.info('tokens=${0}', tokens)
       if (RED.nodeRedAdapter) {
         RED.nodeRedAdapter.updateToken(node, token, false);
       }
@@ -325,7 +324,7 @@ function defaultEventSetDefinition(node, msg) {
 
 function defaultEventDefinition(node, msg) {
   function setField(msg, node, field, target) {
-    // bp.log.info("res node={0};msg={1}; field={2}", node,msg, field);
+    bp.log.info("res node={0};\nmsg={1};\nfield={2}", node,msg, field);
     if (msg[node.type] && msg[node.type][field.name]) {
       target[field.name] = msg[node.type][field.name];
     } else if (node[field.name]) {
