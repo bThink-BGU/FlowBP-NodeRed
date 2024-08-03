@@ -53,4 +53,6 @@ RED.nodeRedAdapter = {
   }
 }
 
+RED.nodesHandlers = {}
+
 RED.nodeRedAdapter.startConnection()

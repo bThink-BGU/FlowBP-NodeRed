@@ -1,7 +1,6 @@
-module.exports = function (n) {
+RED.nodesHandlers.change = function (n, msg) {
   let rules = n.rules;
   let rule;
-  let error = null;
   if (!rules) {
     rule = {
       t: (n.action == "replace" ? "set" : n.action),
@@ -69,7 +68,7 @@ module.exports = function (n) {
         throw "change.errors.invalid-expr: " + e.message;
       }
     } else if (rule.tot === 'env') {
-      rule.to = RED.util.evaluateNodeProperty(rule.to, 'env', node);
+      rule.to = RED.util.evaluateNodeProperty(rule.to, 'env', n);
     }
   }
 
@@ -91,8 +90,8 @@ module.exports = function (n) {
         }
       });
       return
-    } */else if (rule.tot === 'date') {
-      value = RED.util.evaluateNodeProperty(rule.to, rule.tot, node)
+    } */ else if (rule.tot === 'date') {
+      value = RED.util.evaluateNodeProperty(rule.to, rule.tot, n)
     } else if (rule.tot === 'jsonata') {
       RED.util.evaluateJSONataExpression(rule.to, msg, (err, value) => {
         if (err) {
@@ -122,10 +121,10 @@ module.exports = function (n) {
       try {
         fromRE = new RegExp(fromRE, "g");
       } catch (e) {
-        done(new Error(RED._("change.errors.invalid-from", { error: e.message })));
+        done(RED.util.createError("change.errors.invalid-from", { error: e.message }));
       }
     } else {
-      done(new Error(RED._("change.errors.invalid-from", { error: "unsupported type: " + (typeof fromValue) })));
+      done(RED.util.createError("change.errors.invalid-from", { error: "unsupported type: " + (typeof fromValue) }));
     }
     done(undefined, {
       fromType,
@@ -180,16 +179,14 @@ module.exports = function (n) {
     try {
       getToValue(msg, rule, (err, value) => {
         if (err) {
-          node.error(err, msg);
-          return done(undefined, null);
+          return done(RED.util.createError(err, msg), null);
         } else {
           if (rule.dc) {
             value = RED.util.cloneMessage(value);
           }
           getFromValue(msg, rule, (err, fromParts) => {
             if (err) {
-              node.error(err, msg);
-              return done(undefined, null);
+              return done(RED.util.createError(err, msg), null);
             } else {
               fromValue = fromParts.fromValue;
               fromType = fromParts.fromType;
@@ -200,7 +197,7 @@ module.exports = function (n) {
                     RED.util.setMessageProperty(msg, property, undefined);
                   } else if (rule.t === 'set') {
                     if (!RED.util.setMessageProperty(msg, property, value)) {
-                      node.warn(RED._("change.errors.no-override", { property: property }));
+                      bp.log.warn("change.errors.no-override. property: " + property);
                     }
                   } else if (rule.t === 'change') {
                     current = RED.util.getMessageProperty(msg, property);
@@ -237,10 +234,10 @@ module.exports = function (n) {
                   // The key has a nest msg. reference to evaluate first
                   contextKey.key = RED.util.normalisePropertyExpression(contextKey.key, msg, true)
                 }
-                var target = node.context()[rule.pt];
+                var target = n.context()[rule.pt];
                 var callback = err => {
                   if (err) {
-                    node.error(err, msg);
+                    n.error(err, msg);
                     return done(undefined, null);
                   } else {
                     done(undefined, msg);
@@ -253,7 +250,7 @@ module.exports = function (n) {
                 } else if (rule.t === 'change') {
                   target.get(contextKey.key, contextKey.store, (err, current) => {
                     if (err) {
-                      node.error(err, msg);
+                      n.error(err, msg);
                       return done(undefined, null);
                     }
                     if (typeof current === 'string') {
@@ -290,7 +287,7 @@ module.exports = function (n) {
   function completeApplyingRules(msg, currentRule, done) {
     if (!msg) {
       return done();
-    } else if (currentRule === node.rules.length - 1) {
+    } else if (currentRule === n.rules.length - 1) {
       return done(undefined, msg);
     } else {
       applyRules(msg, currentRule + 1, done);
@@ -298,10 +295,10 @@ module.exports = function (n) {
   }
 
   function applyRules(msg, currentRule, done) {
-    if (currentRule >= node.rules.length) {
+    if (currentRule >= rules.length) {
       return done(undefined, msg);
     }
-    var r = node.rules[currentRule];
+    var r = rules[currentRule];
     if (r.t === "move") {
       if ((r.tot !== r.pt) || (r.p.indexOf(r.to) !== -1) && (r.p !== r.to)) {
         applyRule(msg, { t: "set", p: r.to, pt: r.tot, to: r.p, tot: r.pt }, (err, msg) => {
@@ -327,8 +324,11 @@ module.exports = function (n) {
     }
   }
 
-  return {
-    rules: rules,
-    error: error
-  }
+  applyRules(msg, 0, (err, msg) => {
+    bp.log.info('err=${0};msg=${1}', err, msg)
+    if (err) {
+      throw err;
+    }
+  })
+  return msg
 }

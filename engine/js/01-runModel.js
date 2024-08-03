@@ -110,11 +110,11 @@ function spawn_helper(node, token) {
   return function () {
     do {
       let tokens = execute(node, token) //[{sdfsdf},undefined]  [undefined,{sdfsdf}]
+      bp.log.info('tokens=${0}', tokens)
       if (RED.nodeRedAdapter) {
         RED.nodeRedAdapter.updateToken(node, token, false);
       }
       token = undefined
-
       for (let i in node.wires) {
         if (node.wires[i]) {
           if (tokens[i]) {
@@ -195,7 +195,9 @@ function execute(node, token) {
       case "context-start":
         return [cloneToken]
       case "switch":
-        return switchNode(node, cloneToken)
+        return [switchNode(node, cloneToken)]
+      case "change":
+        return [RED.nodesHandlers.change(node, cloneToken)]
       case "log":
         if (node.level === 'info')
           bp.log.info(cloneToken)
