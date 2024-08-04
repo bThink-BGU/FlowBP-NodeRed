@@ -2,6 +2,8 @@
 
 const RED = {};
 
+RED.RedBPUtils = new Packages.il.ac.bgu.cs.bp.bpflow.RedBPUtils();
+
 function cloneToken(token) {
   // return JSON.parse(JSON.stringify(token))
   return token
@@ -35,12 +37,12 @@ for (let n of model.config.flows) {
       n.token = n.payload || "{}";
       starts.push(n);
     } else if (n.type == "context-start") {
-      if (!n.context || n.context==="") {
+      if (!n.context || n.context === "") {
         throw new Error("The context property must be defined for context-start nodes")
       }
       contextStarts.push(n);
     } else if (n.type == "context-init") {
-      if(contextInit) {
+      if (contextInit) {
         throw new Error("There can only be one context-init node")
       }
       contextInit = n.template;
@@ -257,7 +259,7 @@ function execute(node, token) {
         }
 
         event = sync(stmt)
-        copyEventDataToToken(cloneToken, event)
+        // copyEventDataToToken(cloneToken, event)
         return [cloneToken]
       default:
         if (this[node.type]) {
@@ -265,10 +267,12 @@ function execute(node, token) {
         } else {
           if (node.eventType == 'request') {
             event = sync({ request: defaultEventDefinition(node, cloneToken) })
-            copyEventDataToToken(cloneToken, event)
+            // copyEventDataToToken(cloneToken, event)
           } else if (node.eventType == 'waitFor') {
-            event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken)})
-            copyEventDataToToken(cloneToken, event)
+            event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
+            // copyEventDataToToken(cloneToken, event)
+          }else if (node.eventType == 'block') {
+            event = sync({ block: defaultEventSetDefinition(node, cloneToken) })
           }
         }
         return [cloneToken]
@@ -324,7 +328,7 @@ function defaultEventSetDefinition(node, msg) {
 
 function defaultEventDefinition(node, msg) {
   function setField(msg, node, field, target) {
-    bp.log.info("res node={0};\nmsg={1};\nfield={2}", node,msg, field);
+    // bp.log.info("msg={0};node={1};field={2};target={3}", msg, node, field, target);
     if (msg[node.type] && msg[node.type][field.name]) {
       target[field.name] = msg[node.type][field.name];
     } else if (node[field.name]) {
@@ -356,6 +360,7 @@ function defaultEventDefinition(node, msg) {
 }
 
 function copyEventDataToToken(token, event) {
+  // bp.log.info("inside copyEventDataToToken. Token={0}; Event={1}", token, event);
   token.selectedEvent = { name: String(event.name) }
   if (event.data != null) {
     if (typeof event.data === 'object') {

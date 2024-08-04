@@ -26,11 +26,11 @@
   const util = require("util");
   const log = require("./log")*/
   const clonedeep = undefined;
-  const jsonata = undefined;
   const moment = undefined;
   const safeJSONStringify = undefined;
   const util = undefined;
   const log = undefined;
+  const jsonata = com.dashjoin.jsonata.Jsonata.jsonata;
   const { hasOwnProperty } = Object.prototype;
 
   RED.util = {
@@ -104,6 +104,7 @@
      * @memberof @node-red/util_util
      */
     cloneMessage: function (msg) {
+      bp.log.info("entering cloneMessage 2");
       if (typeof msg !== "undefined" && msg !== null) {
         // Temporary fix for #97
         // TODO: remove this http-node-specific fix somehow
@@ -708,7 +709,7 @@
      */
     prepareJSONataExpression: function (value, node) {
       var expr = jsonata(value);
-      expr.assign('flowContext', function (val, store) {
+      /*expr.assign('flowContext', function (val, store) {
         if (node) {
           return node.context().flow.get(val, store);
         }
@@ -727,13 +728,13 @@
         } else {
           return "";
         }
-      });
-      expr.assign('moment', function (arg1, arg2, arg3, arg4) {
+      });*/
+      /*expr.assign('moment', function (arg1, arg2, arg3, arg4) {
         return moment(arg1, arg2, arg3, arg4);
       });
-      expr.registerFunction('clone', cloneMessage, '<(oa)-:o>');
+      expr.registerFunction('clone', this.cloneMessage, '<(oa)-:o>');
       expr._legacyMode = /(^|[^a-zA-Z0-9_'".])msg([^a-zA-Z0-9_'"]|$)/.test(value);
-      expr._node = node;
+      expr._node = node;*/
       return expr;
     },
 
@@ -758,7 +759,7 @@
       if (callback) {
         // If callback provided, need to override the pre-assigned sync
         // context functions to be their async variants
-        bindings.flowContext = function (val, store) {
+        /*bindings.flowContext = function (val, store) {
           return new Promise((resolve, reject) => {
             expr._node.context().flow.get(val, store, function (err, value) {
               if (err) {
@@ -779,17 +780,18 @@
               }
             })
           });
-        }
+        }*/
       } else {
-        const error = new Error('Calls to RED.util.evaluateJSONataExpression must include a callback.')
-        throw error
+        callback(new Error('Calls to RED.util.evaluateJSONataExpression must include a callback.'))
+        return
       }
-
-      expr.evaluate(context, bindings).then(result => {
+      try {
+        let result = expr.evaluate(context/*, bindings*/)
+        result = JSON.parse(RED.RedBPUtils.stringify(result))
         callback(null, result)
-      }).catch(err => {
+      } catch (err) {
         callback(err)
-      })
+      }
     },
 
     /**

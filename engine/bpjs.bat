@@ -1,3 +1,3 @@
 @echo off
-SET jar=%~dp0%BPjs-Context-0.6.12.uber.jar
+SET jar=%~dp0%BPFlow-0.6-DEV.uber.jar
 java -jar %jar% %*

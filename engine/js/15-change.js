@@ -94,6 +94,7 @@ RED.nodesHandlers.change = function (n, msg) {
       value = RED.util.evaluateNodeProperty(rule.to, rule.tot, n)
     } else if (rule.tot === 'jsonata') {
       RED.util.evaluateJSONataExpression(rule.to, msg, (err, value) => {
+        // bp.log.info("msg: {0}\nrule{1},\nvalue: {2}\nerr: {3}", msg, rule, value, err)
         if (err) {
           done(RED._("change.errors.invalid-expr", { error: err.message }))
         } else {
@@ -177,6 +178,7 @@ RED.nodesHandlers.change = function (n, msg) {
     var fromRE;
 
     try {
+        // bp.log.info("msg: {0}\nrule{1}", msg, rule)
       getToValue(msg, rule, (err, value) => {
         if (err) {
           return done(RED.util.createError(err, msg), null);
@@ -329,5 +331,6 @@ RED.nodesHandlers.change = function (n, msg) {
       throw err;
     }
   })
+  // bp.log.info("msg: {0}", msg)
   return msg
 }

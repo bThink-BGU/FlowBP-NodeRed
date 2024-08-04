@@ -238,3 +238,5 @@ packages/node_modules/@bp/nodes/generated
 /engine/js/run-logs/
 /engine/js/00-amodel*.js
 /engine/js/*.EventDef*.js
+/engine/build-bpjs/target/
+/engine/build-bpjs/dependency-reduced-pom.xml
