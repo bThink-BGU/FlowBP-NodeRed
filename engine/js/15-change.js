@@ -63,7 +63,7 @@ RED.nodesHandlers.change = function (n, msg) {
       rule.to = /^true$/i.test(rule.to);
     } else if (rule.tot === 'jsonata') {
       try {
-        bp.log.info("about to enter prepare. rule={0}; this={1}",rule,this)
+        // bp.log.info("about to enter prepare. rule={0}; this={1}",rule,this)
         rule.to = RED.util.prepareJSONataExpression(rule.to, this);
       } catch (e) {
         throw "change.errors.invalid-expr: " + e.message;
@@ -326,12 +326,12 @@ RED.nodesHandlers.change = function (n, msg) {
       });
     }
   }
-  bp.log.info("msg before: {0}", msg)
+  // bp.log.info("msg before: {0}", msg)
   applyRules(msg, 0, (err, msg) => {
     if (err) {
       throw err;
     }
   })
-  bp.log.info("msg after: {0}", msg)
+  // bp.log.info("msg after: {0}", msg)
   return msg
 }

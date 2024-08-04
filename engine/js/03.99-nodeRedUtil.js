@@ -107,7 +107,7 @@
      * @memberof @node-red/util_util
      */
     cloneMessage: function (msg) {
-      bp.log.info("entering cloneMessage 2");
+      // bp.log.info("entering cloneMessage 2");
       if (typeof msg !== "undefined" && msg !== null) {
         // Temporary fix for #97
         // TODO: remove this http-node-specific fix somehow
@@ -711,9 +711,9 @@
      * @memberof @node-red/util_util
      */
     prepareJSONataExpression: function (value, node) {
-      bp.log.info("before jsonata ctor; value={0}; node={1}", value, node)
+      // bp.log.info("before jsonata ctor; value={0}; node={1}", value, node)
       let expr = jsonata(value);
-      bp.log.info("after jsonata ctor")
+      // bp.log.info("after jsonata ctor")
       /*expr.assign('flowContext', function (val, store) {
         if (node) {
           return node.context().flow.get(val, store);
