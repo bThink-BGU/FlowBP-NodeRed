@@ -4,11 +4,11 @@
   "description": "",
   "main": "packages/node_modules/node-red/red.js",
   "scripts": {
-    "start": "npm run generate-nodes ; node packages/node_modules/node-red/red.js",
+    "start": "npm run generate-nodes && node packages/node_modules/node-red/red.js",
     "generate-nodes": "node ./packages/node_modules/@bp/node-generator/build-nodes.js",
     "test": "grunt",
     "build": "grunt build",
-    "dev": "npm run generate-nodes ; supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",
+    "dev": "npm run generate-nodes && supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",
     "build-dev": "grunt build-dev"
   },
   "dependencies": {
