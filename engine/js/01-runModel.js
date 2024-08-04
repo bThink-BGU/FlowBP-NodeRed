@@ -97,10 +97,16 @@ for (let g of groups.values()) {
 //-------------------------------------------------------------------------------
 bthread("initial", function () {
   for (let n of starts) {
-    if (RED.nodeRedAdapter) {
-      RED.nodeRedAdapter.updateToken(n, JSON.parse(n.token), true);
+    let tokens = JSON.parse(n.token)
+    if(!Array.isArray(tokens)){
+      tokens = [tokens]
     }
-    spawn_bthread(n, JSON.parse(n.token));
+    for (let t of tokens) {
+      if (RED.nodeRedAdapter) {
+        RED.nodeRedAdapter.updateToken(n, t, true);
+      }
+      spawn_bthread(n, t);
+    }
   }
 
   for (let n of contextStarts) {

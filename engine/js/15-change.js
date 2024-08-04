@@ -1,5 +1,5 @@
 RED.nodesHandlers.change = function (n, msg) {
-  let rules = n.rules;
+  let rules = RED.util.clonedeep(n.rules);
   let rule;
   if (!rules) {
     rule = {
@@ -63,6 +63,7 @@ RED.nodesHandlers.change = function (n, msg) {
       rule.to = /^true$/i.test(rule.to);
     } else if (rule.tot === 'jsonata') {
       try {
+        bp.log.info("about to enter prepare. rule={0}; this={1}",rule,this)
         rule.to = RED.util.prepareJSONataExpression(rule.to, this);
       } catch (e) {
         throw "change.errors.invalid-expr: " + e.message;
@@ -107,8 +108,8 @@ RED.nodesHandlers.change = function (n, msg) {
   }
 
   function getFromValueType(fromValue, done) {
-    var fromType;
-    var fromRE;
+    let fromType;
+    let fromRE;
     if (typeof fromValue === 'number' || fromValue instanceof Number) {
       fromType = 'num';
     } else if (typeof fromValue === 'boolean') {
@@ -135,15 +136,15 @@ RED.nodesHandlers.change = function (n, msg) {
   }
 
   function getFromValue(msg, rule, done) {
-    var fromValue;
-    var fromType;
-    var fromRE;
+    let fromValue;
+    let fromType;
+    let fromRE;
     if (rule.t === 'change') {
       if (rule.fromt === 'msg' || rule.fromt === 'flow' || rule.fromt === 'global') {
         if (rule.fromt === "msg") {
           return getFromValueType(RED.util.getMessageProperty(msg, rule.from), done);
         }/* else if (rule.fromt === 'flow' || rule.fromt === 'global') {
-          var contextKey = RED.util.parseContextStore(rule.from);
+          let contextKey = RED.util.parseContextStore(rule.from);
           if (/\[msg\./.test(contextKey.key)) {
             // The key has a nest msg. reference to evaluate first
             contextKey.key = RED.util.normalisePropertyExpression(contextKey.key, msg, true);
@@ -171,11 +172,11 @@ RED.nodesHandlers.change = function (n, msg) {
   }
 
   function applyRule(msg, rule, done) {
-    var property = rule.p;
-    var current;
-    var fromValue;
-    var fromType;
-    var fromRE;
+    let property = rule.p;
+    let current;
+    let fromValue;
+    let fromType;
+    let fromRE;
 
     try {
         // bp.log.info("msg: {0}\nrule{1}", msg, rule)
@@ -231,13 +232,13 @@ RED.nodesHandlers.change = function (n, msg) {
                 }
                 return done(undefined, msg);
               } /*else if (rule.pt === 'flow' || rule.pt === 'global') {
-                var contextKey = RED.util.parseContextStore(property);
+                let contextKey = RED.util.parseContextStore(property);
                 if (/\[msg/.test(contextKey.key)) {
                   // The key has a nest msg. reference to evaluate first
                   contextKey.key = RED.util.normalisePropertyExpression(contextKey.key, msg, true)
                 }
-                var target = n.context()[rule.pt];
-                var callback = err => {
+                let target = n.context()[rule.pt];
+                let callback = err => {
                   if (err) {
                     n.error(err, msg);
                     return done(undefined, null);
@@ -300,7 +301,7 @@ RED.nodesHandlers.change = function (n, msg) {
     if (currentRule >= rules.length) {
       return done(undefined, msg);
     }
-    var r = rules[currentRule];
+    let r = rules[currentRule];
     if (r.t === "move") {
       if ((r.tot !== r.pt) || (r.p.indexOf(r.to) !== -1) && (r.p !== r.to)) {
         applyRule(msg, { t: "set", p: r.to, pt: r.tot, to: r.p, tot: r.pt }, (err, msg) => {
@@ -325,12 +326,12 @@ RED.nodesHandlers.change = function (n, msg) {
       });
     }
   }
-
+  bp.log.info("msg before: {0}", msg)
   applyRules(msg, 0, (err, msg) => {
     if (err) {
       throw err;
     }
   })
-  // bp.log.info("msg: {0}", msg)
+  bp.log.info("msg after: {0}", msg)
   return msg
 }

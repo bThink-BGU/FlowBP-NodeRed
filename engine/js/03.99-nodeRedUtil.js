@@ -33,11 +33,10 @@
   const jsonata = com.dashjoin.jsonata.Jsonata.jsonata;
   const { hasOwnProperty } = Object.prototype;
 
-  function clonedeep(obj) {
-    return JSON.parse(RED.RedBPUtils.stringify(obj));
-  }
-
   RED.util = {
+    clonedeep: function (obj) {
+      return JSON.parse(RED.RedBPUtils.stringify(obj));
+    },
     /**
      * Safely returns the object constructor name.
      * @return {String} the name of the object constructor if it exists, empty string otherwise.
@@ -54,8 +53,8 @@
      * @memberof @node-red/util_util
      */
     /*generateId: function () {
-      var bytes = [];
-      for (var i = 0; i < 8; i++) {
+      let bytes = [];
+      for (let i = 0; i < 8; i++) {
         bytes.push(Math.round(0xff * Math.random()).toString(16).padStart(2, '0'));
       }
       return bytes.join("");
@@ -112,11 +111,11 @@
       if (typeof msg !== "undefined" && msg !== null) {
         // Temporary fix for #97
         // TODO: remove this http-node-specific fix somehow
-        var req = msg.req;
-        var res = msg.res;
+        let req = msg.req;
+        let res = msg.res;
         delete msg.req;
         delete msg.res;
-        var m = clonedeep(msg);
+        let m = this.clonedeep(msg);
         if (req) {
           m.req = req;
           msg.req = req;
@@ -139,7 +138,7 @@
      * @memberof @node-red/util_util
      */
     compareObjects: function (obj1, obj2) {
-      var i;
+      let i;
       if (obj1 === obj2) {
         return true;
       }
@@ -147,8 +146,8 @@
         return false;
       }
 
-      var isArray1 = Array.isArray(obj1);
-      var isArray2 = Array.isArray(obj2);
+      let isArray1 = Array.isArray(obj1);
+      let isArray2 = Array.isArray(obj2);
       if (isArray1 != isArray2) {
         return false;
       }
@@ -163,8 +162,8 @@
         }
         return true;
       }
-      var isBuffer1 = Buffer.isBuffer(obj1);
-      var isBuffer2 = Buffer.isBuffer(obj2);
+      let isBuffer1 = Buffer.isBuffer(obj1);
+      let isBuffer2 = Buffer.isBuffer(obj2);
       if (isBuffer1 != isBuffer2) {
         return false;
       }
@@ -188,12 +187,12 @@
       if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
         return false;
       }
-      var keys1 = Object.keys(obj1);
-      var keys2 = Object.keys(obj2);
+      let keys1 = Object.keys(obj1);
+      let keys2 = Object.keys(obj2);
       if (keys1.length != keys2.length) {
         return false;
       }
-      for (var k in obj1) {
+      for (let k in obj1) {
         /* istanbul ignore else */
         if (hasOwnProperty.call(obj1, k)) {
           if (!this.compareObjects(obj1[k], obj2[k])) {
@@ -205,7 +204,7 @@
     },
 
     createError: function (code, message) {
-      var e = new Error(message);
+      let e = new Error(message);
       e.code = code;
       return e;
     },
@@ -231,19 +230,19 @@
       // This must be kept in sync with validatePropertyExpression
       // in editor/js/ui/utils.js
 
-      var length = str.length;
+      let length = str.length;
       if (length === 0) {
         throw this.createError("INVALID_EXPR", "Invalid property expression: zero-length");
       }
-      var parts = [];
-      var start = 0;
-      var inString = false;
-      var inBox = false;
-      var boxExpression = false;
-      var quoteChar;
-      var v;
-      for (var i = 0; i < length; i++) {
-        var c = str[i];
+      let parts = [];
+      let start = 0;
+      let inString = false;
+      let inBox = false;
+      let boxExpression = false;
+      let quoteChar;
+      let v;
+      for (let i = 0; i < length; i++) {
+        let c = str[i];
         if (!inString) {
           if (c === "'" || c === '"') {
             if (i != start) {
@@ -285,10 +284,10 @@
             // Start of a new expression. If it starts with msg it is a nested expression
             // Need to scan ahead to find the closing bracket
             if (/^msg[.\[]/.test(str.substring(i + 1))) {
-              var depth = 1;
-              var inLocalString = false;
-              var localStringQuote;
-              for (var j = i + 1; j < length; j++) {
+              let depth = 1;
+              let inLocalString = false;
+              let localStringQuote;
+              for (let j = i + 1; j < length; j++) {
                 if (/["']/.test(str[j])) {
                   if (inLocalString) {
                     if (str[j] === localStringQuote) {
@@ -307,7 +306,7 @@
                 if (depth === 0) {
                   try {
                     if (msg) {
-                      var crossRefProp = this.getMessageProperty(msg, str.substring(i + 1, j));
+                      let crossRefProp = this.getMessageProperty(msg, str.substring(i + 1, j));
                       if (crossRefProp === undefined) {
                         throw this.createError("INVALID_EXPR", "Invalid expression: undefined reference at position " + (i + 1) + " : " + str.substring(i + 1, j))
                       }
@@ -377,9 +376,9 @@
       }
 
       if (toString) {
-        var result = parts.shift();
+        let result = parts.shift();
         while (parts.length > 0) {
-          var p = parts.shift();
+          let p = parts.shift();
           if (typeof p === 'string') {
             if (/"/.test(p)) {
               p = "'" + p + "'";
@@ -437,8 +436,8 @@
      * @memberof @node-red/util_util
      */
     getObjectProperty: function (msg, expr) {
-      var result = null;
-      var msgPropParts = this.normalisePropertyExpression(expr, msg);
+      let result = null;
+      let msgPropParts = this.normalisePropertyExpression(expr, msg);
       msgPropParts.reduce(function (obj, key) {
         result = (typeof obj[key] !== "undefined" ? obj[key] : undefined);
         return result;
@@ -478,12 +477,12 @@
       if (typeof createMissing === 'undefined') {
         createMissing = (typeof value !== 'undefined');
       }
-      var msgPropParts = this.normalisePropertyExpression(prop, msg);
-      var depth = 0;
-      var length = msgPropParts.length;
-      var obj = msg;
-      var key;
-      for (var i = 0; i < length - 1; i++) {
+      let msgPropParts = this.normalisePropertyExpression(prop, msg);
+      let depth = 0;
+      let length = msgPropParts.length;
+      let obj = msg;
+      let key;
+      for (let i = 0; i < length - 1; i++) {
         key = msgPropParts[i];
         if (typeof key === 'string' || (typeof key === 'number' && !Array.isArray(obj))) {
           if (hasOwnProperty.call(obj, key)) {
@@ -557,7 +556,7 @@
           return node._path;
         }
       }
-      var flow = (flow_ ? flow_ : (node ? node._flow : null));
+      let flow = (flow_ ? flow_ : (node ? node._flow : null));
       if (flow) {
         if (node && node.g) {
           const group = flow.getGroupNode(node.g);
@@ -574,7 +573,7 @@
      * Checks if a String contains any Environment Variable specifiers and returns
      * it with their values substituted in place.
      *
-     * For example, if the env var `WHO` is set to `Joe`, the string `Hello ${WHO}!`
+     * For example, if the env let `WHO` is set to `Joe`, the string `Hello ${WHO}!`
      * will return `Hello Joe!`.
      * @param  {String} value - the string to parse
      * @param  {Node} node - the node evaluating the property
@@ -582,11 +581,11 @@
      * @memberof @node-red/util_util
      */
     evaluateEnvProperty: function (value, node) {
-      var flow = (node && hasOwnProperty.call(node, "_flow")) ? node._flow : null;
-      var result;
+      let flow = (node && hasOwnProperty.call(node, "_flow")) ? node._flow : null;
+      let result;
       if (/^\${[^}]+}$/.test(value)) {
         // ${ENV_VAR}
-        var name = value.substring(2, value.length - 1);
+        let name = value.substring(2, value.length - 1);
         result = this.getSetting(node, name, flow);
       } else if (!/\${\S+}/.test(value)) {
         // ENV_VAR
@@ -594,7 +593,7 @@
       } else {
         // FOO${ENV_VAR}BAR
         return value.replace(/\${([^}]+)}/g, function (match, name) {
-          var val = this.getSetting(node, name, flow);
+          let val = this.getSetting(node, name, flow);
           return (val === undefined) ? "" : val;
         });
       }
@@ -613,8 +612,8 @@
      * @memberof @node-red/util_util
      */
     parseContextStore: function (key) {
-      var parts = {};
-      var m = /^#:\((\S+?)\)::(.*)$/.exec(key);
+      let parts = {};
+      let m = /^#:\((\S+?)\)::(.*)$/.exec(key);
       if (m) {
         parts.store = m[1];
         parts.key = m[2];
@@ -637,7 +636,7 @@
      * @memberof @node-red/util_util
      */
     evaluateNodeProperty: function (value, type, node, msg, callback) {
-      var result = value;
+      let result = value;
       if (type === 'str') {
         result = "" + value;
       } else if (type === 'num') {
@@ -657,7 +656,7 @@
           result = moment().format(value)
         }
       } else if (type === 'bin') {
-        var data = JSON.parse(value);
+        let data = JSON.parse(value);
         if (Array.isArray(data) || (typeof (data) === "string")) {
           result = Buffer.from(data);
         } else {
@@ -675,7 +674,7 @@
           return;
         }
       } else if ((type === 'flow' || type === 'global') && node) {
-        var contextKey = this.parseContextStore(value);
+        let contextKey = this.parseContextStore(value);
         if (/\[msg/.test(contextKey.key)) {
           // The key has a nest msg. reference to evaluate first
           contextKey.key = this.normalisePropertyExpression(contextKey.key, msg, true)
@@ -687,7 +686,7 @@
       } else if (type === 'bool') {
         result = /^true$/i.test(value);
       } else if (type === 'jsonata') {
-        var expr = this.prepareJSONataExpression(value, node);
+        let expr = this.prepareJSONataExpression(value, node);
         result = this.evaluateJSONataExpression(expr, msg, callback);
         if (callback) {
           return
@@ -712,7 +711,9 @@
      * @memberof @node-red/util_util
      */
     prepareJSONataExpression: function (value, node) {
-      var expr = jsonata(value);
+      bp.log.info("before jsonata ctor; value={0}; node={1}", value, node)
+      let expr = jsonata(value);
+      bp.log.info("after jsonata ctor")
       /*expr.assign('flowContext', function (val, store) {
         if (node) {
           return node.context().flow.get(val, store);
@@ -726,7 +727,7 @@
         return "";
       });
       expr.assign('env', function (name) {
-        var val = this.getSetting(node, name, node ? node._flow : null);
+        let val = this.getSetting(node, name, node ? node._flow : null);
         if (typeof val !== 'undefined') {
           return val;
         } else {
@@ -754,11 +755,11 @@
      * @memberof @node-red/util_util
      */
     evaluateJSONataExpression: function (expr, msg, callback) {
-      var context = msg;
+      let context = msg;
       if (expr._legacyMode) {
         context = { msg: msg };
       }
-      var bindings = {};
+      let bindings = {};
 
       if (callback) {
         // If callback provided, need to override the pre-assigned sync
@@ -808,7 +809,7 @@
      * @memberof @node-red/util_util
      */
     normaliseNodeTypeName: function (name) {
-      var result = name.replace(/[^a-zA-Z0-9]/g, " ");
+      let result = name.replace(/[^a-zA-Z0-9]/g, " ");
       result = result.trim();
       result = result.replace(/ +/g, " ");
       result = result.replace(/ ./g,
@@ -833,14 +834,14 @@
      */
     encodeObject: function (msg, opts) {
       try {
-        var debuglength = 1000;
+        let debuglength = 1000;
         if (opts && hasOwnProperty.call(opts, 'maxLength')) {
           debuglength = opts.maxLength;
         }
-        var msgType = typeof msg.msg;
+        let msgType = typeof msg.msg;
         if (msg.msg instanceof Error) {
           msg.format = "error";
-          var errorMsg = {};
+          let errorMsg = {};
           if (msg.msg.name) {
             errorMsg.name = msg.msg.name;
           }
@@ -872,8 +873,8 @@
               message: msg.msg.message
             });
           } else {
-            var isArray = Array.isArray(msg.msg);
-            var needsStringify = isArray;
+            let isArray = Array.isArray(msg.msg);
+            let needsStringify = isArray;
             if (isArray) {
               msg.format = "array[" + msg.msg.length + "]";
               if (msg.msg.length > debuglength) {
@@ -1022,7 +1023,7 @@
         return msg;
       } catch (e) {
         msg.format = "error";
-        var errorMsg = {};
+        let errorMsg = {};
         if (e.name) {
           errorMsg.name = e.name;
         }
