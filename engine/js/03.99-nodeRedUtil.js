@@ -25,13 +25,17 @@
   const safeJSONStringify = require("json-stringify-safe");
   const util = require("util");
   const log = require("./log")*/
-  const clonedeep = undefined;
+  // const clonedeep = undefined;
   const moment = undefined;
-  const safeJSONStringify = undefined;
-  const util = undefined;
+  const util = undefined; // not needed. replaced by RED.RedBPUtils.stringify
   const log = undefined;
+  const safeJSONStringify = SafeJSONStringify();
   const jsonata = com.dashjoin.jsonata.Jsonata.jsonata;
   const { hasOwnProperty } = Object.prototype;
+
+  function clonedeep(obj) {
+    return JSON.parse(RED.RedBPUtils.stringify(obj));
+  }
 
   RED.util = {
     /**
@@ -986,7 +990,7 @@
               try {
                 msg.msg = msg.msg.toString();
               } catch (e) {
-                msg.msg = "[Type not printable]" + util.inspect(msg.msg);
+                msg.msg = "[Type not printable]" + RED.RedBPUtils.stringify(msg.msg);
               }
             }
           }
@@ -1023,9 +1027,9 @@
           errorMsg.name = e.name;
         }
         if (hasOwnProperty.call(e, 'message')) {
-          errorMsg.message = 'encodeObject Error: [' + e.message + '] Value: ' + util.inspect(msg.msg);
+          errorMsg.message = 'encodeObject Error: [' + e.message + '] Value: ' + RED.RedBPUtils.stringify(msg.msg);
         } else {
-          errorMsg.message = 'encodeObject Error: [' + e.toString() + '] Value: ' + util.inspect(msg.msg);
+          errorMsg.message = 'encodeObject Error: [' + e.toString() + '] Value: ' + RED.RedBPUtils.stringify(msg.msg);
         }
         if (errorMsg.message.length > debuglength) {
           errorMsg.message = errorMsg.message.substring(0, debuglength);
