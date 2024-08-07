@@ -117,9 +117,13 @@ bthread("initial", function () {
 function spawn_helper(node, token) {
   return function () {
     do {
-      let tokens = execute(node, token) //[{sdfsdf},undefined]  [undefined,{sdfsdf}]
-      if (RED.nodeRedAdapter) {
-        RED.nodeRedAdapter.updateToken(node, token, false);
+      let tokens;
+      try {
+        tokens = execute(node, token) //[{sdfsdf},undefined]  [undefined,{sdfsdf}]
+      } finally {
+        if (RED.nodeRedAdapter) {
+          RED.nodeRedAdapter.updateToken(node, token, false);
+        }
       }
       token = undefined
       for (let i in node.wires) {
@@ -265,7 +269,6 @@ function execute(node, token) {
         }
 
         event = sync(stmt)
-        // copyEventDataToToken(cloneToken, event)
         return [cloneToken]
       default:
         if (this[node.type]) {
@@ -273,10 +276,8 @@ function execute(node, token) {
         } else {
           if (node.eventType == 'request') {
             event = sync({ request: defaultEventDefinition(node, cloneToken) })
-            // copyEventDataToToken(cloneToken, event)
           } else if (node.eventType == 'waitFor') {
             event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
-            // copyEventDataToToken(cloneToken, event)
           }else if (node.eventType == 'block') {
             event = sync({ block: defaultEventSetDefinition(node, cloneToken) })
           }
@@ -363,20 +364,4 @@ function defaultEventDefinition(node, msg) {
     event = bp.Event(String(node.type))
   }
   return event;
-}
-
-function copyEventDataToToken(token, event) {
-  // bp.log.info("inside copyEventDataToToken. Token={0}; Event={1}", token, event);
-  token.selectedEvent = { name: String(event.name) }
-  if (event.data != null) {
-    if (typeof event.data === 'object') {
-      if (!token[event.name]) {
-        token[event.name] = {}
-      }
-      Object.assign(token[event.name], event.data)
-    } else {
-      token[event.name] = event.data
-    }
-  }
-  token.selectedEvent.data = event.data
 }
