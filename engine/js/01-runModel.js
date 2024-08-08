@@ -98,7 +98,7 @@ for (let g of groups.values()) {
 bthread("initial", function () {
   for (let n of starts) {
     let tokens = JSON.parse(n.token)
-    if(!Array.isArray(tokens)){
+    if (!Array.isArray(tokens)) {
       tokens = [tokens]
     }
     for (let t of tokens) {
@@ -278,7 +278,7 @@ function execute(node, token) {
             event = sync({ request: defaultEventDefinition(node, cloneToken) })
           } else if (node.eventType == 'waitFor') {
             event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
-          }else if (node.eventType == 'block') {
+          } else if (node.eventType == 'block') {
             event = sync({ block: defaultEventSetDefinition(node, cloneToken) })
           }
         }
@@ -303,65 +303,90 @@ function execute(node, token) {
 function defaultEventSetDefinition(node, msg) {
   function conditionForField(msg, node, field) {
     let target = '';
-    // bp.log.info("res node={0};msg={1}; field={2}", node,msg, field);
-    if (msg[node.type] && msg[node.type][field.name]) {
-      target = msg[node.type][field.name];
-    } else if (node[field.name]) {
-      target = node[field.name];
-    }
-
-    if (target !== '') {
-      if (!Array.isArray(target) && (field.type !== 'select' || field.defaultValue != target)) {
-        target = ' && e.data.' + field.name + ' == "' + target + '"';
+    if (node[field] !== undefined && node[field] !== "") {
+      let fieldVal = getField(node, msg, field);
+      if (typeof fieldVal === 'string') {
+        target = ` && e.data.${field} == "${fieldVal}"`;
       } else {
-        target = ''
+        target = ` && e.data.${field} == ${fieldVal}`;
       }
     }
-
     return target;
   }
 
+  if(allEventFieldsAreSet(node)) {
+    // bp.log.info("Switching to defaultEventDefinition")
+    return defaultEventDefinition(node, msg);
+  }
+
+  // bp.log.info("WAITFOR: node: {0}\nWAITFOR: msg: {1}", node, msg)
   let condition = 'bp.EventSet("", function(e) { return e.name.equals("' + node.type + '")';
-  if (node.internalFields) {
+  if (node.internalFields !== "[]") {
     let fields = JSON.parse(node.internalFields);
     for (let i = 0; i < fields.length; i++) {
       condition += conditionForField(msg, node, fields[i]);
     }
   }
   condition += ' })'
-  // bp.log.info("condition="+condition)
+  // bp.log.info("condition=" + condition)
   return eval(condition)
 }
 
-function defaultEventDefinition(node, msg) {
-  function setField(msg, node, field, target) {
-    // bp.log.info("msg={0};node={1};field={2};target={3}", msg, node, field, target);
-    if (msg[node.type] && msg[node.type][field.name]) {
-      target[field.name] = msg[node.type][field.name];
-    } else if (node[field.name]) {
-      target[field.name] = node[field.name];
-    }
-
-    if (field.type === 'select' && (!target[field.name] || target[field.name] === field.defaultValue)) {
-      target[field.name] = Object.keys(field.options).filter(key => key !== 'select');
-    }
-
-    if (Array.isArray(target[field.name])) {
-      target[field.name] = choose(target[field.name]);
+function allEventFieldsAreSet(node) {
+  let fields = JSON.parse(node.internalFields);
+  for (let i = 0; i < fields.length; i++) {
+    if (node[fields[i]] === undefined || node[fields[i]] === "") {
+      return false;
     }
   }
+  return true;
+}
 
-  // bp.log.info(node)
+function getField(node, msg, field) {
+  // bp.log.info("msg={0};node={1};field={2};target={3}", msg, node, field, target);
+  switch (node[field + "Type"]) {
+    case 'str':
+      return node[field];
+    case 'num':
+      return Number(node[field]);
+    case 'bool':
+      return /^true$/i.test(node[field]);
+    case 'date':
+      return new Date(node[field]);
+    case 'json':
+      return JSON.parse(node[field]);
+    case 'jsonata':
+      try {
+        let expr = RED.util.prepareJSONataExpression(node[field], node);
+        return RED.util.evaluateJSONataExpression(expr, msg)
+      } catch (err) {
+        throw RED.util.createError(`Node ${node.type}.${field}.invalid-expr ${node[field]}`, `Node ${node.type}.${field}.invalid-expr ${node[field]}. Message: ${err.message}`)
+      }
+    case 'msg':
+      return RED.util.getMessageProperty(msg, node[field]);
+    case 'select':
+    case 'multiSelect':
+      return node[field];
+  }
+}
+
+function defaultEventDefinition(node, msg) {
   let event;
-  if (node.internalFields) {
+  // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
+  if (node.internalFields !== "[]") {
     let data = {}
     let fields = JSON.parse(node.internalFields);
+    bp.log.info("fields={0}", fields);
     for (let i = 0; i < fields.length; i++) {
-      setField(msg, node, fields[i], data);
+      data[fields[i]] = getField(node, msg, fields[i]);
+      bp.log.info("fields[i]={0};data={1}", fields[i], data[fields[i]]);
     }
+    bp.log.info("data={0}", data);
+    // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
     event = bp.Event(String(node.type), data)
   } else {
     event = bp.Event(String(node.type))
   }
+  bp.log.info("event: {0}", event)
   return event;
 }

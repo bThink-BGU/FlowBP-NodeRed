@@ -750,7 +750,7 @@
      *
      * @param  {Object}   expr     - the prepared JSONata expression
      * @param  {Object}   msg      - the message object to evaluate against
-     * @param  {Function} callback - (optional) called when the expression is evaluated
+     * @param  {Function} [callback=] - (optional) called when the expression is evaluated
      * @return {any} If no callback was provided, the result of the expression
      * @memberof @node-red/util_util
      */
@@ -759,7 +759,7 @@
       if (expr._legacyMode) {
         context = { msg: msg };
       }
-      let bindings = {};
+      // let bindings = {};
 
       if (callback) {
         // If callback provided, need to override the pre-assigned sync
@@ -786,16 +786,16 @@
             })
           });
         }*/
+        try {
+          let result = expr.evaluate(context/*, bindings*/)
+          result = JSON.parse(RED.RedBPUtils.stringify(result))
+          callback(null, result)
+        } catch (err) {
+          callback(err)
+        }
       } else {
-        callback(new Error('Calls to RED.util.evaluateJSONataExpression must include a callback.'))
-        return
-      }
-      try {
         let result = expr.evaluate(context/*, bindings*/)
-        result = JSON.parse(RED.RedBPUtils.stringify(result))
-        callback(null, result)
-      } catch (err) {
-        callback(err)
+        return JSON.parse(RED.RedBPUtils.stringify(result))
       }
     },
 
