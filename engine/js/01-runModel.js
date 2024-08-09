@@ -274,6 +274,7 @@ function execute(node, token) {
         if (this[node.type]) {
           this[node.type](node, cloneToken)
         } else {
+          bp.log.info(`${node.eventType}: `)
           if (node.eventType == 'request') {
             event = sync({ request: defaultEventDefinition(node, cloneToken) })
           } else if (node.eventType == 'waitFor') {
@@ -316,7 +317,7 @@ function defaultEventSetDefinition(node, msg) {
 
   if(allEventFieldsAreSet(node)) {
     // bp.log.info("Switching to defaultEventDefinition")
-    return defaultEventDefinition(node, msg);
+    return defaultEventDefinition(node, msg, false);
   }
 
   // bp.log.info("WAITFOR: node: {0}\nWAITFOR: msg: {1}", node, msg)
@@ -328,12 +329,15 @@ function defaultEventSetDefinition(node, msg) {
     }
   }
   condition += ' })'
-  // bp.log.info("condition=" + condition)
+  bp.log.info(condition)
   return eval(condition)
 }
 
-function allEventFieldsAreSet(node) {
+function allEventFieldsAreSet(node, takeRFields) {
   let fields = JSON.parse(node.internalFields);
+  if(takeRFields) {
+    fields = fields.map(f => f+"R");
+  }
   for (let i = 0; i < fields.length; i++) {
     if (node[fields[i]] === undefined || node[fields[i]] === "") {
       return false;
@@ -370,23 +374,30 @@ function getField(node, msg, field) {
   }
 }
 
-function defaultEventDefinition(node, msg) {
+function defaultEventDefinition(node, msg, takeRFields) {
+  if(takeRFields === undefined || takeRFields === null) {
+    takeRFields = true;
+  }
   let event;
   // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
   if (node.internalFields !== "[]") {
     let data = {}
     let fields = JSON.parse(node.internalFields);
-    bp.log.info("fields={0}", fields);
+    if (takeRFields) {
+      fields = fields.map(f => f+"R");
+    }
+    // bp.log.info("fields={0}", fields);
     for (let i = 0; i < fields.length; i++) {
       data[fields[i]] = getField(node, msg, fields[i]);
-      bp.log.info("fields[i]={0};data={1}", fields[i], data[fields[i]]);
+      // bp.log.info("fields[i]={0};data={1}", fields[i], data[fields[i]]);
     }
-    bp.log.info("data={0}", data);
+    // bp.log.info("data={0}", data);
     // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
     event = bp.Event(String(node.type), data)
   } else {
     event = bp.Event(String(node.type))
   }
-  bp.log.info("event: {0}", event)
+  bp.log.info(event)
+
   return event;
 }
