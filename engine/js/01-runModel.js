@@ -379,20 +379,16 @@ function defaultEventDefinition(node, msg, takeRFields) {
     takeRFields = true;
   }
   let event;
-  // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
   if (node.internalFields !== "[]") {
     let data = {}
     let fields = JSON.parse(node.internalFields);
+    let fieldsValues = fields;
     if (takeRFields) {
-      fields = fields.map(f => f+"R");
+      fieldsValues = fields.map(f => f+"R");
     }
-    // bp.log.info("fields={0}", fields);
     for (let i = 0; i < fields.length; i++) {
-      data[fields[i]] = getField(node, msg, fields[i]);
-      // bp.log.info("fields[i]={0};data={1}", fields[i], data[fields[i]]);
+      data[fields[i]] = getField(node, msg, fieldsValues[i]);
     }
-    // bp.log.info("data={0}", data);
-    // bp.log.info("REQUEST: node: {0}\nREQUEST: msg: {1}", node, msg)
     event = bp.Event(String(node.type), data)
   } else {
     event = bp.Event(String(node.type))
