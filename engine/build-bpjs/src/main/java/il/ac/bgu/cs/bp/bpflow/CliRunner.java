@@ -29,8 +29,11 @@ import il.ac.bgu.cs.bp.bpjs.analysis.violations.Violation;
 import il.ac.bgu.cs.bp.bpjs.context.ContextBProgram;
 import il.ac.bgu.cs.bp.bpjs.exceptions.BPjsCodeEvaluationException;
 import il.ac.bgu.cs.bp.bpjs.internal.ScriptableUtils;
+import il.ac.bgu.cs.bp.bpjs.model.BEvent;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
+import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListener;
+import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListenerAdapter;
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.PrintBProgramRunnerListener;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
@@ -48,8 +51,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
+
+import com.microsoft.playwright.*;
+
 
 /**
  * This is a console application for running BPjs files. Source files are passed
@@ -233,6 +240,18 @@ public class CliRunner {
             if (!switchPresent("-v", args)) {
                 bpr.addListener(new PrintBProgramRunnerListener());
             }
+
+            bpr.addListener(new BProgramRunnerListenerAdapter() {
+                public void eventSelected(BProgram bp, BEvent theEvent) {
+                    println("Selected: " + theEvent);
+                    try (Playwright playwright = Playwright.create()) {
+                        Browser browser = playwright.chromium().launch();
+                        Page page = browser.newPage();
+                        page.navigate(((NativeObject)theEvent.getData()).get("url").toString());
+                        System.out.println(page.title());
+                    }
+                }
+            });
 
             bpr.run();
         }

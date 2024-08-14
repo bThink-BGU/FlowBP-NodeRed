@@ -211,11 +211,15 @@ function execute(node, token) {
         return [RED.nodesHandlers.change(node, cloneToken)]
       case "log":
         if (node.level === 'info')
-          bp.log.info(cloneToken)
-        else if (node.level === 'warn')
-          bp.log.warn(cloneToken)
+          bp.log.info(node.name + "/" + cloneToken)
+        else if (node.name + "/" + node.level === 'warn')
+          bp.log.warn(node.name + "/" + cloneToken)
         if (node.level === 'fine')
-          bp.log.fine(cloneToken)
+          bp.log.fine(node.name + "/" + cloneToken)
+
+        Packages.il.ac.bgu.cs.bp.bpflow.LogWebSocketServer.broadcastLogMessage("This is a test log message.");
+
+        
         return []
       case "loop":
         if ("count" in cloneToken) {
@@ -315,7 +319,7 @@ function defaultEventSetDefinition(node, msg) {
     return target;
   }
 
-  if(allEventFieldsAreSet(node)) {
+  if (allEventFieldsAreSet(node)) {
     // bp.log.info("Switching to defaultEventDefinition")
     return defaultEventDefinition(node, msg, false);
   }
@@ -335,8 +339,8 @@ function defaultEventSetDefinition(node, msg) {
 
 function allEventFieldsAreSet(node, takeRFields) {
   let fields = JSON.parse(node.internalFields);
-  if(takeRFields) {
-    fields = fields.map(f => f+"R");
+  if (takeRFields) {
+    fields = fields.map(f => f + "R");
   }
   for (let i = 0; i < fields.length; i++) {
     if (node[fields[i]] === undefined || node[fields[i]] === "") {
@@ -375,7 +379,7 @@ function getField(node, msg, field) {
 }
 
 function defaultEventDefinition(node, msg, takeRFields) {
-  if(takeRFields === undefined || takeRFields === null) {
+  if (takeRFields === undefined || takeRFields === null) {
     takeRFields = true;
   }
   let event;
@@ -384,7 +388,7 @@ function defaultEventDefinition(node, msg, takeRFields) {
     let fields = JSON.parse(node.internalFields);
     let fieldsValues = fields;
     if (takeRFields) {
-      fieldsValues = fields.map(f => f+"R");
+      fieldsValues = fields.map(f => f + "R");
     }
     for (let i = 0; i < fields.length; i++) {
       data[fields[i]] = getField(node, msg, fieldsValues[i]);
@@ -393,7 +397,7 @@ function defaultEventDefinition(node, msg, takeRFields) {
   } else {
     event = bp.Event(String(node.type))
   }
-  bp.log.info(event)
+  bp.log.info("event:" + event)
 
   return event;
 }
