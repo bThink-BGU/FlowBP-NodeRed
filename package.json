@@ -8,17 +8,21 @@
     "generate-nodes": "node ./packages/node_modules/@bp/node-generator/build-nodes.js",
     "test": "grunt",
     "build": "grunt build",
-    "dev": "npm run generate-nodes && supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",
+    "ddev": "npm run generate-nodes && supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js",
+    "dev": "npm run generate-nodes && concurrently \"supervisor -e js,html,json -w packages/node_modules/node-red,packages/node_modules/@bp/nodes,packages/node_modules/@bp/engine-adapter packages/node_modules/node-red/red.js\" \"cmd /c engine\\connectionServer.bat\"",
     "build-dev": "grunt build-dev"
   },
   "dependencies": {
     "ansi-to-html": "^0.7.0",
+    "bp-flow": "file:",
+    "concurrently": "^7.0.0",
     "deep-equal": "^2.0.5",
     "denque": "^1.5.0",
     "grunt-contrib-jshint": "^3.0.0",
     "node-red": "file:packages/node_modules/node-red"
   },
   "devDependencies": {
+    "concurrently": "^7.0.0",
     "grunt": "^1.6.1",
     "grunt-cli": "~1.4.2",
     "grunt-concurrent": "^3.0.0",

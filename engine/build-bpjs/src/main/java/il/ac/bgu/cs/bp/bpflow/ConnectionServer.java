@@ -36,10 +36,10 @@ public class ConnectionServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Message received: " + message);
+        //System.out.println("Message received: " + message);
+        
         // Broadcast the received message to all connected clients
-        broadcast("Server says: " + message);
-
+        broadcast(message);
 
     }
 
