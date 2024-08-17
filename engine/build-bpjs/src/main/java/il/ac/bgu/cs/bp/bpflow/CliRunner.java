@@ -23,40 +23,48 @@
  */
 package il.ac.bgu.cs.bp.bpflow;
 
-import il.ac.bgu.cs.bp.bpjs.analysis.*;
-import il.ac.bgu.cs.bp.bpjs.analysis.listeners.PrintDfsVerifierListener;
-import il.ac.bgu.cs.bp.bpjs.analysis.violations.Violation;
-import il.ac.bgu.cs.bp.bpjs.context.ContextBProgram;
-import il.ac.bgu.cs.bp.bpjs.exceptions.BPjsCodeEvaluationException;
-import il.ac.bgu.cs.bp.bpjs.internal.ScriptableUtils;
-import il.ac.bgu.cs.bp.bpjs.model.BEvent;
-import il.ac.bgu.cs.bp.bpjs.model.BProgram;
-import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
-import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListener;
-import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListenerAdapter;
-import il.ac.bgu.cs.bp.bpjs.execution.listeners.PrintBProgramRunnerListener;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionStrategy;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.PrioritizedBSyncEventSelectionStrategy;
-import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.java_websocket.server.WebSocketServer;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 
+import il.ac.bgu.cs.bp.bpjs.analysis.BProgramSnapshotVisitedStateStore;
+import il.ac.bgu.cs.bp.bpjs.analysis.BThreadSnapshotVisitedStateStore;
+import il.ac.bgu.cs.bp.bpjs.analysis.DfsBProgramVerifier;
+import il.ac.bgu.cs.bp.bpjs.analysis.ExecutionTraceInspections;
+import il.ac.bgu.cs.bp.bpjs.analysis.VerificationResult;
+import il.ac.bgu.cs.bp.bpjs.analysis.listeners.PrintDfsVerifierListener;
+import il.ac.bgu.cs.bp.bpjs.analysis.violations.Violation;
+import il.ac.bgu.cs.bp.bpjs.context.ContextBProgram;
+import il.ac.bgu.cs.bp.bpjs.exceptions.BPjsCodeEvaluationException;
+import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
+import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListenerAdapter;
+import il.ac.bgu.cs.bp.bpjs.execution.listeners.PrintBProgramRunnerListener;
+import il.ac.bgu.cs.bp.bpjs.model.BEvent;
+import il.ac.bgu.cs.bp.bpjs.model.BProgram;
+import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionStrategy;
+import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
+import il.ac.bgu.cs.bp.bpjs.model.eventselection.PrioritizedBSyncEventSelectionStrategy;
+import il.ac.bgu.cs.bp.bpjs.model.eventselection.SimpleEventSelectionStrategy;
 
 /**
  * This is a console application for running BPjs files. Source files are passed
@@ -135,7 +143,8 @@ public class CliRunner {
                     }
 
                 } catch (IOException var7) {
-                    throw new RuntimeException("Error reading resource: '" + filename + "': " + var7.getMessage(), var7);
+                    throw new RuntimeException("Error reading resource: '" + filename + "': " + var7.getMessage(),
+                            var7);
                 }
             }
 
@@ -211,10 +220,10 @@ public class CliRunner {
 
                     println("Counter example trace:");
                     vio.getCounterExampleTrace().getNodes().stream()
-                        .map(n -> n.getEvent())
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .forEach(evt -> println(evt.toString()));
+                            .map(n -> n.getEvent())
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .forEach(evt -> println(evt.toString()));
 
                 } else {
                     println("No violations found");
@@ -224,7 +233,6 @@ public class CliRunner {
                 println(String.format("Time:\t%,d (msec)", res.getTimeMillies()));
                 println(String.format("States scanned:\t%,d", res.getScannedStatesCount()));
                 println(String.format("Edges scanned:\t%,d", res.getScannedEdgesCount()));
-
 
             } catch (Exception e) {
                 println("!! Exception during verifying the program: " + e.getMessage());
@@ -241,17 +249,8 @@ public class CliRunner {
                 bpr.addListener(new PrintBProgramRunnerListener());
             }
 
-            bpr.addListener(new BProgramRunnerListenerAdapter() {
-                public void eventSelected(BProgram bp, BEvent theEvent) {
-                    println("Selected: " + theEvent);
-                    try (Playwright playwright = Playwright.create()) {
-                        Browser browser = playwright.chromium().launch();
-                        Page page = browser.newPage();
-                        page.navigate(((NativeObject)theEvent.getData()).get("url").toString());
-                        System.out.println(page.title());
-                    }
-                }
-            });
+            // Report the events to the dashboard
+            bpr.addListener(new WebSocketRunnerListener(new URI("ws://localhost:8080")));
 
             bpr.run();
         }
@@ -287,7 +286,8 @@ public class CliRunner {
     }
 
     private static void printUsageAndExit() {
-        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("RunFile-usage.txt")))) {
+        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(
+                Thread.currentThread().getContextClassLoader().getResourceAsStream("RunFile-usage.txt")))) {
             rdr.lines().forEach(System.out::println);
         } catch (IOException ex) {
             throw new RuntimeException("Cannot find 'RunFile-usage.txt'");
