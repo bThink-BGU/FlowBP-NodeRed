@@ -46,9 +46,13 @@
         ws.onmessage = function(event) {
             var logDiv = document.getElementById('log');
             var newMessage = document.createElement('p');
-            newMessage.textContent = event.data;
-            logDiv.appendChild(newMessage);
-            logDiv.scrollTop = logDiv.scrollHeight; // Auto-scroll to the bottom
+            if (event.data.startsWith('Event selected:')) {
+                var icon = document.createElement('span');
+                icon.textContent = '🔔'; 
+                newMessage.appendChild(icon);
+                newMessage.appendChild(document.createTextNode(' ' + event.data));
+                logDiv.appendChild(newMessage);
+            }
         };
 
         ws.onclose = function() {
