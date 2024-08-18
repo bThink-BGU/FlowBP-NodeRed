@@ -170,6 +170,8 @@ public class CliRunner {
         ContextBProgram.initBProgram(bpp);
 
         EventSelectionStrategy ess = new SimpleEventSelectionStrategy();
+
+
         if (switchPresent("--use_sync_priority_ess", args)) {
             ess = new PrioritizedBSyncEventSelectionStrategy();
         }
@@ -243,6 +245,8 @@ public class CliRunner {
         } else {
             if (switchPresent("-v", args))
                 ess = new LoggingEventSelectionStrategyDecorator(ess);
+
+            ess = new WebSocketEventSelectionStrategy(new URI("ws://localhost:8080"), ess);
             bpp.setEventSelectionStrategy(ess);
             BProgramRunner bpr = new BProgramRunner(bpp);
             if (!switchPresent("-v", args)) {

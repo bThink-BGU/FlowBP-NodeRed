@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Message Viewer</title>
+    <title>Event Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,6 +14,7 @@
             flex-direction: column;
             height: 100vh;
         }
+
         #log {
             flex: 1;
             padding: 10px;
@@ -20,48 +22,173 @@
             border: 1px solid #ddd;
             background-color: #f9f9f9;
         }
+
         #log p {
             margin: 0;
             padding: 5px;
             border-bottom: 1px solid #ddd;
         }
-        #status {
-            padding: 10px;
-            background-color: #eee;
-            border-bottom: 1px solid #ddd;
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .message {
+            margin: 5px 0;
+        }
+
+        .expandable {
+            cursor: pointer;
+        }
+
+        .expandable::after {
+            content: " ▼";
+            font-size: 0.8em;
+        }
+
+        .details {
+            display: none;
+            margin-left: 20px;
         }
     </style>
 </head>
+
 <body>
     <div id="status">Status: Disconnected</div>
-    <div id="log"></div>
+    <div>
+        <input type="checkbox" id="showStartedProgram" checked>
+        <label for="showStartedProgram">Show "Started program:" messages</label>
+    </div>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Log')">Log</button>
+        <button class="tablinks" onclick="openTab(event, 'Node')">Node</button>
+    </div>
+
+    <div id="Log" class="tabcontent">
+        <div id="log"></div>
+    </div>
+
+    <div id="Node" class="tabcontent">
+        <h3>Node</h3>
+        <p>Node content goes here...</p>
+    </div>
 
     <script>
         var ws = new WebSocket('ws://localhost:8080');
 
-        ws.onopen = function() {
+        ws.onopen = function () {
             document.getElementById('status').textContent = 'Status: Connected';
         };
 
-        ws.onmessage = function(event) {
+        ws.onmessage = function (event) {
             var logDiv = document.getElementById('log');
-            var newMessage = document.createElement('p');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var showStartedProgram = document.getElementById('showStartedProgram').checked;
+
             if (event.data.startsWith('Event selected:')) {
                 var icon = document.createElement('span');
-                icon.textContent = '🔔'; 
+                icon.textContent = '🔔';
+                newMessage.appendChild(icon);
+
+                var eventText = event.data.substring(15); // Remove "Event selected: " prefix
+                console.log(eventText);
+                var eventObj = JSON.parse(eventText); // Parse the JSON object
+                var eventName = eventObj.name; // Extract the event name
+
+
+
+                var summary = document.createElement('span');
+                summary.textContent = ' ' + eventName;
+                if (eventObj.maybeData != null) {
+                    summary.classList.add('expandable');
+                    summary.onclick = function () {
+                        detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+                    };
+                    newMessage.appendChild(summary);
+
+                    var detailsDiv = document.createElement('div');
+                    detailsDiv.classList.add('details');
+
+                    for (var key in eventObj.maybeData) {
+                        var detail = document.createElement('div');
+                        detail.textContent = key + ': ' + eventObj.maybeData[key];
+                        detailsDiv.appendChild(detail);
+
+                    }
+
+                    newMessage.appendChild(detailsDiv);
+                } else {
+                    newMessage.appendChild(summary);
+                }
+                logDiv.appendChild(newMessage);
+            } else if (event.data.startsWith('Started program:') && showStartedProgram) {
+                var icon = document.createElement('span');
+                icon.textContent = '🚀';
                 newMessage.appendChild(icon);
                 newMessage.appendChild(document.createTextNode(' ' + event.data));
                 logDiv.appendChild(newMessage);
+            } else if (event.data.startsWith('Selectable events:')) {
+                var eventsText = event.data.substring(18); // Remove "Selectable events: " prefix
+                console.log(event.data);
+                // var eventsArray = JSON.parse(eventsText); // Parse the JSON string
+
+                // var selectedEvent = window.prompt("Select an event:\n" + eventsArray.join("\n"));
+                // if (selectedEvent && eventsArray.includes(selectedEvent)) {
+                //     ws.send("Selected event: " + selectedEvent);
+                // }
             }
         };
 
-        ws.onclose = function() {
+        ws.onclose = function () {
             document.getElementById('status').textContent = 'Status: Disconnected';
         };
 
-        ws.onerror = function(error) {
-            console.error('WebSocket Error: ', error);
-        };
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Open the default tab
+        document.getElementsByClassName('tablinks')[0].click();
     </script>
 </body>
+
 </html>
