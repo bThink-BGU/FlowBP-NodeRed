@@ -156,6 +156,7 @@
                 newMessage.appendChild(icon);
                 newMessage.appendChild(document.createTextNode(' ' + event.data));
                 logDiv.appendChild(newMessage);
+                clearLog();
             } else if (event.data.startsWith('Selectable events:')) {
                 var eventsText = event.data.substring(18); // Remove "Selectable events: " prefix
                 console.log(event.data);
@@ -175,10 +176,13 @@
                 var selectButton = document.createElement('button');
                 selectButton.textContent = 'Select Event';
                 selectButton.onclick = function () {
+                    // Send the selected event to the server
                     var selectedEvent = select.selectedIndex;
-                    if (selectedEvent) {
-                        ws.send("Selected event: " + selectedEvent);
-                    }
+                    ws.send("Selected event: " + selectedEvent);
+
+                    // Disable the dropdown menu and the button
+                    select.disabled = true;
+                    selectButton.disabled = true;
                 };
 
                 newMessage.appendChild(select);
@@ -186,6 +190,11 @@
                 logDiv.appendChild(newMessage);
             }
         };
+
+        function clearLog() {
+            var logDiv = document.getElementById('logDiv');
+            logDiv.innerHTML = ''; 
+        }
 
         ws.onclose = function () {
             document.getElementById('status').textContent = 'Status: Disconnected';

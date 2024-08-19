@@ -113,11 +113,6 @@ bthread("initial", function () {
     spawn_cbt(n);
   }
 
-  // Hack to prevent infinite runs
-  for (var i = 0; i < 20; i++)
-    sync({ waitFor: bp.all })
-
-  sync({ block: bp.all })
 })
 
 function spawn_helper(node, token) {
