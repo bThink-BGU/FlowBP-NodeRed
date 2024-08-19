@@ -101,6 +101,8 @@
     </div>
 
     <script>
+        // Create a WebSocket connection to the server
+        // Chnage the URL to the server URL
         var ws = new WebSocket('ws://localhost:8080');
 
         ws.onopen = function () {
@@ -108,98 +110,136 @@
         };
 
         ws.onmessage = function (event) {
+            var data = event.data;
+
+            if (data.startsWith('Event selected:')) {
+                handleEventSelected(data);
+            } else if (data.startsWith('Started program:')) {
+                handleStartedProgram(data);
+            } else if (data.startsWith('Selectable events:')) {
+                handleSelectableEvents(data);
+            }
+        };
+
+        // Handle the "Event selected:" message. The message contains a JSON object with the event name and optional data.
+        // The optional data is displayed in a collapsible section.
+        function handleEventSelected(data) {
             var logDiv = document.getElementById('log');
             var newMessage = document.createElement('div');
             newMessage.classList.add('message');
 
-            var showStartedProgram = document.getElementById('showStartedProgram').checked;
+            var icon = document.createElement('span');
+            icon.textContent = '🔔';
+            newMessage.appendChild(icon);
 
-            if (event.data.startsWith('Event selected:')) {
-                var icon = document.createElement('span');
-                icon.textContent = '🔔';
-                newMessage.appendChild(icon);
+            var eventText = data.substring(15); // Remove "Event selected: " prefix
+            var eventObj = JSON.parse(eventText); // Parse the JSON object
+            var eventName = eventObj.name; // Extract the event name
 
-                var eventText = event.data.substring(15); // Remove "Event selected: " prefix
-                console.log(eventText);
-                var eventObj = JSON.parse(eventText); // Parse the JSON object
-                var eventName = eventObj.name; // Extract the event name
+            var summary = document.createElement('span');
+            summary.textContent = ' ' + eventName;
+            newMessage.appendChild(summary);
 
-
-
-                var summary = document.createElement('span');
-                summary.textContent = ' ' + eventName;
-                if (eventObj.maybeData != null) {
-                    summary.classList.add('expandable');
-                    summary.onclick = function () {
-                        detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
-                    };
-                    newMessage.appendChild(summary);
-
-                    var detailsDiv = document.createElement('div');
-                    detailsDiv.classList.add('details');
-
-                    for (var key in eventObj.maybeData) {
-                        var detail = document.createElement('div');
-                        detail.textContent = key + ': ' + eventObj.maybeData[key];
-                        detailsDiv.appendChild(detail);
-
-                    }
-
-                    newMessage.appendChild(detailsDiv);
-                } else {
-                    newMessage.appendChild(summary);
-                }
-                logDiv.appendChild(newMessage);
-            } else if (event.data.startsWith('Started program:') && showStartedProgram) {
-                var icon = document.createElement('span');
-                icon.textContent = '🚀';
-                newMessage.appendChild(icon);
-                newMessage.appendChild(document.createTextNode(' ' + event.data));
-                logDiv.appendChild(newMessage);
-                clearLog();
-            } else if (event.data.startsWith('Selectable events:')) {
-                var eventsText = event.data.substring(18); // Remove "Selectable events: " prefix
-                console.log(event.data);
-                ws.send("Wait for selection");
-                var eventsArray = JSON.parse(eventsText); // Parse the JSON string
-
-                // Create a dropdown menu for event selection
-                var select = document.createElement('select');
-                select.id = 'eventSelect';
-                eventsArray.forEach(function (event) {
-                    var option = document.createElement('option');
-                    option.value = event.name;
-                    option.textContent = event.name;
-                    select.appendChild(option);
-                });
-
-                var selectButton = document.createElement('button');
-                selectButton.textContent = 'Select Event';
-                selectButton.onclick = function () {
-                    // Send the selected event to the server
-                    var selectedEvent = select.selectedIndex;
-                    ws.send("Selected event: " + selectedEvent);
-
-                    // Disable the dropdown menu and the button
-                    select.disabled = true;
-                    selectButton.disabled = true;
+            if (eventObj.maybeData != null) {
+                summary.classList.add('expandable');
+                summary.onclick = function () {
+                    detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
                 };
 
-                newMessage.appendChild(select);
-                newMessage.appendChild(selectButton);
-                logDiv.appendChild(newMessage);
-            }
-        };
+                var detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('details');
 
-        function clearLog() {
-            var logDiv = document.getElementById('logDiv');
-            logDiv.innerHTML = ''; 
+                for (var key in eventObj.maybeData) {
+                    var detail = document.createElement('div');
+                    detail.textContent = key + ': ' + eventObj.maybeData[key];
+                    detailsDiv.appendChild(detail);
+                }
+
+                newMessage.appendChild(detailsDiv);
+            }
+
+            logDiv.appendChild(newMessage);
         }
 
+
+        // Handle the "Started program:" message. The message contains the name of the program that was started.        
+        function handleStartedProgram(data) {
+            var showStartedProgram = document.getElementById('showStartedProgram').checked;
+            if (!showStartedProgram) return;
+            
+            clearLog();
+            
+            var logDiv = document.getElementById('log');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var icon = document.createElement('span');
+            icon.textContent = '🚀';
+            newMessage.appendChild(icon);
+            newMessage.appendChild(document.createTextNode(' ' + data));
+
+            logDiv.appendChild(newMessage);
+        }
+
+
+        // Handle the "Selectable events:" message. The message contains a JSON array with the selectable events.
+        // The selectable events are displayed in a dropdown menu.
+        // When an event is selected, the selected event is sent to the server.
+        // The dropdown menu and the button are disabled after an event is selected.
+        function handleSelectableEvents(data) {
+            
+            // Let the server know that the client is planning to select an event
+            ws.send("Wait for selection");
+
+
+            var logDiv = document.getElementById('log');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var eventsText = data.substring(18); // Remove "Selectable events: " prefix
+            var eventsArray = JSON.parse(eventsText); // Parse the JSON string
+
+            // Create a dropdown menu for event selection
+            var select = document.createElement('select');
+            select.id = 'eventSelect';
+            eventsArray.forEach(function (event) {
+                var option = document.createElement('option');
+                option.value = event.name;
+                option.textContent = event.name;
+                select.appendChild(option);
+            });
+
+            var selectButton = document.createElement('button');
+            selectButton.textContent = 'Select Event';
+            selectButton.onclick = function () {
+                // Send the selected event to the server
+                var selectedEvent = select.selectedIndex;
+                ws.send("Selected event: " + selectedEvent);
+
+                // Disable the dropdown menu and the button
+                select.disabled = true;
+                selectButton.disabled = true;
+            };
+
+            newMessage.appendChild(select);
+            newMessage.appendChild(selectButton);
+            logDiv.appendChild(newMessage);
+        }
+
+        // Clear the log
+        function clearLog() {
+            var logDiv = document.getElementById('log');
+            logDiv.innerHTML = '';
+        }
+
+        // Close the WebSocket connection when the window is closed
         ws.onclose = function () {
             document.getElementById('status').textContent = 'Status: Disconnected';
         };
 
+
+        // Open the tab content. The tab content is hidden by default.
+        // The tab content is displayed when the tab is clicked.
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
             tabcontent = document.getElementsByClassName("tabcontent");
