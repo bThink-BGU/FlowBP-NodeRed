@@ -1,5 +1,6 @@
 package il.ac.bgu.cs.bp.bpflow;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
@@ -17,12 +18,13 @@ import il.ac.bgu.cs.bp.bpjs.model.BProgramSyncSnapshot;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionResult;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionStrategy;
 
-public class WebSocketEventSelectionStrategy extends WebSocketClient implements EventSelectionStrategy {
+public class WebSocketEventSelectionStrategyDecorator extends WebSocketClient implements EventSelectionStrategy {
 
     private final EventSelectionStrategy decoratedStrategy;
     private final ObjectMapper objectMapper;
+    private int selectedEvent = -2;
 
-    public WebSocketEventSelectionStrategy(URI serverUri, EventSelectionStrategy decoratedStrategy) {
+    public WebSocketEventSelectionStrategyDecorator(URI serverUri, EventSelectionStrategy decoratedStrategy) {
         super(serverUri);
         this.decoratedStrategy = decoratedStrategy;
         this.objectMapper = new ObjectMapper();
@@ -41,20 +43,46 @@ public class WebSocketEventSelectionStrategy extends WebSocketClient implements 
 
     @Override
     public Optional<EventSelectionResult> select(BProgramSyncSnapshot bpss, Set<BEvent> selectableEvents) {
+
+        var selectableEventsList = selectableEvents.stream().collect(toList());
+
+        selectedEvent = -2;
+
         try {
-            String json = objectMapper.writeValueAsString(selectableEvents);
+            String json = objectMapper.writeValueAsString(selectableEventsList);
             send("Selectable events:" + json);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Delegate to the decorated strategy
-        Optional<EventSelectionResult> result = decoratedStrategy.select(bpss, selectableEvents);
+        // Wait for the selected event to be received
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+        }
 
-        // Custom behavior after delegating to the decorated strategy
-        System.out.println("Selected event: " + result.get().getEvent());
+        if (selectedEvent == -1) {
 
-        return result;
+            // Wait for the selected event to be bigger than -1
+            while (selectedEvent == -1) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+            }
+
+            return Optional.of(new EventSelectionResult(selectableEventsList.get(selectedEvent)));
+
+        } else {
+
+            // Delegate to the decorated strategy
+            Optional<EventSelectionResult> result = decoratedStrategy.select(bpss, selectableEvents);
+
+            // Custom behavior after delegating to the decorated strategy
+            System.out.println("Selected event: " + result.get().getEvent());
+
+            return result;
+        }
     }
 
     @Override
@@ -64,7 +92,15 @@ public class WebSocketEventSelectionStrategy extends WebSocketClient implements 
 
     @Override
     public void onMessage(String message) {
-        //System.out.println("Received message: " + message);
+        if (message.startsWith("Wait for selection")) {
+            selectedEvent = -1;
+        }
+        if (message.startsWith("Selected event:")) {
+            // Extract the event from the message
+            String e = message.substring("Selected event:".length());
+            selectedEvent = Integer.parseInt(e.trim());
+        }
+
     }
 
     @Override

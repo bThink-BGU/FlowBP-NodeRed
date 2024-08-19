@@ -27,7 +27,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,15 +36,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.java_websocket.server.WebSocketServer;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
-
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
 
 import il.ac.bgu.cs.bp.bpjs.analysis.BProgramSnapshotVisitedStateStore;
 import il.ac.bgu.cs.bp.bpjs.analysis.BThreadSnapshotVisitedStateStore;
@@ -57,9 +50,7 @@ import il.ac.bgu.cs.bp.bpjs.analysis.violations.Violation;
 import il.ac.bgu.cs.bp.bpjs.context.ContextBProgram;
 import il.ac.bgu.cs.bp.bpjs.exceptions.BPjsCodeEvaluationException;
 import il.ac.bgu.cs.bp.bpjs.execution.BProgramRunner;
-import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListenerAdapter;
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.PrintBProgramRunnerListener;
-import il.ac.bgu.cs.bp.bpjs.model.BEvent;
 import il.ac.bgu.cs.bp.bpjs.model.BProgram;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.EventSelectionStrategy;
 import il.ac.bgu.cs.bp.bpjs.model.eventselection.LoggingEventSelectionStrategyDecorator;
@@ -97,7 +88,10 @@ public class CliRunner {
                     } else {
                         if (!arg.startsWith("-")) {
                             Path inFile = Paths.get(arg);
-                            println(" [READ] %s", inFile.toAbsolutePath().toString());
+                            // Print if verbose mode
+                            if (switchPresent("-v", args)) {
+                                println(" [READ] %s", inFile.toAbsolutePath().toString());
+                            }
                             if (!Files.exists(inFile)) {
                                 println("File %s does not exit", inFile.toAbsolutePath().toString());
                                 System.exit(-2);
@@ -114,7 +108,8 @@ public class CliRunner {
                             }
                         }
                     }
-                    println(" [ OK ] %s", arg);
+                    if (switchPresent("-v", args))
+                        println(" [ OK ] %s", arg);
                 }
             }
 
@@ -170,7 +165,6 @@ public class CliRunner {
         ContextBProgram.initBProgram(bpp);
 
         EventSelectionStrategy ess = new SimpleEventSelectionStrategy();
-
 
         if (switchPresent("--use_sync_priority_ess", args)) {
             ess = new PrioritizedBSyncEventSelectionStrategy();
@@ -246,10 +240,14 @@ public class CliRunner {
             if (switchPresent("-v", args))
                 ess = new LoggingEventSelectionStrategyDecorator(ess);
 
-            ess = new WebSocketEventSelectionStrategy(new URI("ws://localhost:8080"), ess);
+            // Add the WebSocket event selection strategy that will allow the user to select
+            // the events if the dashboard is connected
+            ess = new WebSocketEventSelectionStrategyDecorator(new URI("ws://localhost:8080"), ess);
+
             bpp.setEventSelectionStrategy(ess);
             BProgramRunner bpr = new BProgramRunner(bpp);
-            if (!switchPresent("-v", args)) {
+
+            if (switchPresent("-v", args)) {
                 bpr.addListener(new PrintBProgramRunnerListener());
             }
 

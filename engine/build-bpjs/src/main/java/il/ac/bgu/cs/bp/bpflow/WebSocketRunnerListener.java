@@ -31,7 +31,7 @@ public class WebSocketRunnerListener extends WebSocketClient implements BProgram
 
     @Override
     public void onMessage(String message) {
-        //System.out.println("Received message: " + message);
+        // System.out.println("Received message: " + message);
     }
 
     @Override
@@ -80,12 +80,7 @@ public class WebSocketRunnerListener extends WebSocketClient implements BProgram
 
     @Override
     public void starting(BProgram bprog) {
-        try {
-            String json = objectMapper.writeValueAsString(bprog);
-            send("Starting program: " + json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        send("Starting program: " + bprog.getName());
     }
 
     @Override

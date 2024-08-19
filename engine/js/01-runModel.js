@@ -112,6 +112,12 @@ bthread("initial", function () {
   for (let n of contextStarts) {
     spawn_cbt(n);
   }
+
+  // Hack to prevent infinite runs
+  for (var i = 0; i < 20; i++)
+    sync({ waitFor: bp.all })
+
+  sync({ block: bp.all })
 })
 
 function spawn_helper(node, token) {
@@ -217,9 +223,6 @@ function execute(node, token) {
         if (node.level === 'fine')
           bp.log.fine(node.name + "/" + cloneToken)
 
-        Packages.il.ac.bgu.cs.bp.bpflow.LogWebSocketServer.broadcastLogMessage("This is a test log message.");
-
-        
         return []
       case "loop":
         if ("count" in cloneToken) {
@@ -278,7 +281,6 @@ function execute(node, token) {
         if (this[node.type]) {
           this[node.type](node, cloneToken)
         } else {
-          bp.log.info(`${node.eventType}: `)
           if (node.eventType == 'request') {
             event = sync({ request: defaultEventDefinition(node, cloneToken) })
           } else if (node.eventType == 'waitFor') {

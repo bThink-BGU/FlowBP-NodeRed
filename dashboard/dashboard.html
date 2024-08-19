@@ -159,12 +159,31 @@
             } else if (event.data.startsWith('Selectable events:')) {
                 var eventsText = event.data.substring(18); // Remove "Selectable events: " prefix
                 console.log(event.data);
-                // var eventsArray = JSON.parse(eventsText); // Parse the JSON string
+                ws.send("Wait for selection");
+                var eventsArray = JSON.parse(eventsText); // Parse the JSON string
 
-                // var selectedEvent = window.prompt("Select an event:\n" + eventsArray.join("\n"));
-                // if (selectedEvent && eventsArray.includes(selectedEvent)) {
-                //     ws.send("Selected event: " + selectedEvent);
-                // }
+                // Create a dropdown menu for event selection
+                var select = document.createElement('select');
+                select.id = 'eventSelect';
+                eventsArray.forEach(function (event) {
+                    var option = document.createElement('option');
+                    option.value = event.name;
+                    option.textContent = event.name;
+                    select.appendChild(option);
+                });
+
+                var selectButton = document.createElement('button');
+                selectButton.textContent = 'Select Event';
+                selectButton.onclick = function () {
+                    var selectedEvent = select.selectedIndex;
+                    if (selectedEvent) {
+                        ws.send("Selected event: " + selectedEvent);
+                    }
+                };
+
+                newMessage.appendChild(select);
+                newMessage.appendChild(selectButton);
+                logDiv.appendChild(newMessage);
             }
         };
 
