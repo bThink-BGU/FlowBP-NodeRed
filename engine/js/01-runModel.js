@@ -105,7 +105,7 @@ bthread("initial", function () {
       if (RED.nodeRedAdapter) {
         RED.nodeRedAdapter.updateToken(n, t, true);
       }
-      spawn_bthread(n, t);
+      spawn_bthread(n, t); 
     }
   }
 

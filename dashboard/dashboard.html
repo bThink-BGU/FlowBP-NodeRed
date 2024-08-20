@@ -83,8 +83,8 @@
 <body>
     <div id="status">Status: Disconnected</div>
     <div>
-        <input type="checkbox" id="showStartedProgram" checked>
-        <label for="showStartedProgram">Show "Started program:" messages</label>
+        <input type="checkbox" id="chooseEventsRandomly" unchecked>
+        <label for="chooseEventsRandomly">Random event selection.</label>
     </div>
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'Log')">Log</button>
@@ -164,11 +164,9 @@
 
         // Handle the "Started program:" message. The message contains the name of the program that was started.        
         function handleStartedProgram(data) {
-            var showStartedProgram = document.getElementById('showStartedProgram').checked;
-            if (!showStartedProgram) return;
-            
+
             clearLog();
-            
+
             var logDiv = document.getElementById('log');
             var newMessage = document.createElement('div');
             newMessage.classList.add('message');
@@ -187,7 +185,7 @@
         // When an event is selected, the selected event is sent to the server.
         // The dropdown menu and the button are disabled after an event is selected.
         function handleSelectableEvents(data) {
-            
+
             // Let the server know that the client is planning to select an event
             ws.send("Wait for selection");
 
@@ -199,34 +197,42 @@
             var eventsText = data.substring(18); // Remove "Selectable events: " prefix
             var eventsArray = JSON.parse(eventsText); // Parse the JSON string
 
-            // Create a dropdown menu for event selection
-            var select = document.createElement('select');
-            select.id = 'eventSelect';
-            eventsArray.forEach(function (event) {
-                var option = document.createElement('option');
-                option.value = event.name;
-                option.textContent = event.name;
-                select.appendChild(option);
-            });
-
-            var selectButton = document.createElement('button');
-            selectButton.textContent = 'Select Event';
-            selectButton.onclick = function () {
-                // Send the selected event to the server
-                var selectedEvent = select.selectedIndex;
+            var chooseEventsRandomly = document.getElementById('chooseEventsRandomly').checked;
+            if (chooseEventsRandomly) {
+                // Choose random index from the events array
+                var selectedEvent = Math.floor(Math.random() * eventsArray.length);
                 ws.send("Selected event: " + selectedEvent);
+            } else {
+                // Create a dropdown menu for event selection
+                var select = document.createElement('select');
+                select.id = 'eventSelect';
+                eventsArray.forEach(function (event) {
+                    var option = document.createElement('option');
+                    option.value = event.name;
+                    option.textContent = event.name;
+                    select.appendChild(option);
+                });
 
-                // Disable the dropdown menu and the button
-                select.disabled = true;
-                selectButton.disabled = true;
+                var selectButton = document.createElement('button');
+                selectButton.textContent = 'Select Event';
+                selectButton.onclick = function () {
+                    // Send the selected event to the server
+                    var selectedEvent = select.selectedIndex;
+                    ws.send("Selected event: " + selectedEvent);
 
-                // Remove the pannel
-                newMessage.remove();
-            };
+                    // Disable the dropdown menu and the button
+                    select.disabled = true;
+                    selectButton.disabled = true;
 
-            newMessage.appendChild(select);
-            newMessage.appendChild(selectButton);
-            logDiv.appendChild(newMessage);
+                    // Remove the pannel
+                    newMessage.remove();
+                };
+
+                newMessage.appendChild(select);
+                newMessage.appendChild(selectButton);
+                logDiv.appendChild(newMessage);
+            }
+
         }
 
         // Clear the log
