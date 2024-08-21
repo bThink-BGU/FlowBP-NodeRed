@@ -253,6 +253,7 @@ public class CliRunner {
 
             // Report the events to the dashboard
             bpr.addListener(new WebSocketRunnerListener(new URI("ws://localhost:8080")));
+            bpr.addListener(new PlaywrightListener());
 
             bpr.run();
         }

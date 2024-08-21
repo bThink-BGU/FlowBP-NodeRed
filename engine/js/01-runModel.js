@@ -390,11 +390,12 @@ function defaultEventDefinition(node, msg, takeRFields) {
     for (let i = 0; i < fields.length; i++) {
       data[fields[i]] = getField(node, msg, fieldsValues[i]);
     }
+    bp.log.info("NNNode:" + JSON.stringify(node))
     event = bp.Event(String(node.type), data)
   } else {
     event = bp.Event(String(node.type))
   }
-  bp.log.info("event:" + event)
+  
 
   return event;
 }
