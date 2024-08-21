@@ -1,8 +1,16 @@
 package il.ac.bgu.cs.bp.bpflow;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import org.mozilla.javascript.NativeObject;
 
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListener;
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
@@ -14,7 +22,8 @@ public class PlaywrightListener implements BProgramRunnerListener {
 
     private Browser browser;
     private BrowserContext context;
-    private Page page;
+
+    Map<String, Page> pages = new HashMap<String, Page>();
 
     @Override
     public void eventSelected(BProgram bp, BEvent theEvent) {
@@ -22,31 +31,44 @@ public class PlaywrightListener implements BProgramRunnerListener {
             var eventData = (NativeObject) theEvent.getData();
 
             if (eventData != null && eventData.containsKey("lib") && eventData.get("lib").equals("playwright")) {
-                System.err.println("Playwright event: " + theEvent.name);
+                System.err.println("Playwright event: " + theEvent);
+
+                Page page = null;
+                if (eventData.get("page") != null) {
+                    page = pages.get(eventData.get("page"));
+                }
 
                 if (theEvent.name.equals("StartBrowser")) {
-                    openBrowser(String.valueOf(eventData.get("url")));
+                    page = openBrowser(String.valueOf(eventData.get("url")));
+                    pages.put(String.valueOf(eventData.get("page")), page);
+                } else if (theEvent.name.equals("Click")) {
+                    page.click(String.valueOf(eventData.get("locator")));
+                    // } else if (theEvent.name.equals("Type")) {
+                    // page.type(String.valueOf(eventData.get("selector")),
+                    // String.valueOf(eventData.get("text")));
+                    // } else if (theEvent.name.equals("WaitForSelector")) {
+                    // page.waitForSelector(String.valueOf(eventData.get("selector")));
+                    // } else if (theEvent.name.equals("WaitForTimeout")) {
+                    // page.waitForTimeout(Integer.parseInt(String.valueOf(eventData.get("timeout"))));
+                    // } else if (theEvent.name.equals("Screenshot")) {
+                    // page.screenshot(
+                    // new
+                    // Page.ScreenshotOptions().setPath(Paths.get(String.valueOf(eventData.get("path")))));
                 }
+
             }
         } catch (ClassCastException e) {
         }
     }
 
-    private void openBrowser(String url) {
+    private Page openBrowser(String url) {
         System.out.println("Openning browser at: " + url);
         Playwright playwright = Playwright.create();
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
         context = browser.newContext();
-        page = context.newPage();
+        var page = context.newPage();
         page.navigate(url);
-    }
-
-    // Ensure to close the browser when done
-    public void closeBrowser() {
-        if (browser != null) {
-            browser.close();
-            System.out.println("Browser closed");
-        }
+        return page;
     }
 
     @Override

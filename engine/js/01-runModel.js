@@ -105,7 +105,7 @@ bthread("initial", function () {
       if (RED.nodeRedAdapter) {
         RED.nodeRedAdapter.updateToken(n, t, true);
       }
-      spawn_bthread(n, t); 
+      spawn_bthread(n, t);
     }
   }
 
@@ -272,6 +272,12 @@ function execute(node, token) {
 
         event = sync(stmt)
         return [cloneToken]
+      case "browser":
+        bp.log.info("StartBrowser: {0}", node);
+        event = sync({ request: bp.Event("StartBrowser", { lib: "playwright", url: String(node.url), page: String(node.page) }) })
+        cloneToken.page = node.page
+        return [cloneToken]
+
       default:
         if (this[node.type]) {
           this[node.type](node, cloneToken)
@@ -390,12 +396,11 @@ function defaultEventDefinition(node, msg, takeRFields) {
     for (let i = 0; i < fields.length; i++) {
       data[fields[i]] = getField(node, msg, fieldsValues[i]);
     }
-    bp.log.info("NNNode:" + JSON.stringify(node))
     event = bp.Event(String(node.type), data)
   } else {
     event = bp.Event(String(node.type))
   }
-  
+
 
   return event;
 }
