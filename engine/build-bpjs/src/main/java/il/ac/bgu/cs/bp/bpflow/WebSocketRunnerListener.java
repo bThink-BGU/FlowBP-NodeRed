@@ -46,6 +46,13 @@ public class WebSocketRunnerListener extends WebSocketClient implements BProgram
 
     ///////////////////////////////////////////////////////////////////////////
 
+    @Override 
+    public void send(String message) {
+        if (isOpen())
+            super.send(message);
+    }
+
+
     @Override
     public void eventSelected(BProgram bp, BEvent theEvent) {
         try {

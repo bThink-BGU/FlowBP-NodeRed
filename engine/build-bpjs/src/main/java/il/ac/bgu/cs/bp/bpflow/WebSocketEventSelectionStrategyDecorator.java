@@ -36,6 +36,14 @@ public class WebSocketEventSelectionStrategyDecorator extends WebSocketClient im
         System.err.println("An error occurred:" + ex);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Override 
+    public void send(String message) {
+        if (isOpen())
+            super.send(message);
+    }
+
     @Override
     public Set<BEvent> selectableEvents(BProgramSyncSnapshot bpss) {
         return decoratedStrategy.selectableEvents(bpss);
