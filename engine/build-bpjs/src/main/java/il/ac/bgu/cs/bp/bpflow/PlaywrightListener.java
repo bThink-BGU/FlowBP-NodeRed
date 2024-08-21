@@ -43,9 +43,10 @@ public class PlaywrightListener implements BProgramRunnerListener {
                     pages.put(String.valueOf(eventData.get("page")), page);
                 } else if (theEvent.name.equals("Click")) {
                     page.click(String.valueOf(eventData.get("locator")));
-                    // } else if (theEvent.name.equals("Type")) {
-                    // page.type(String.valueOf(eventData.get("selector")),
-                    // String.valueOf(eventData.get("text")));
+                } else if (theEvent.name.equals("Type")) {
+                    page.type(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("text")));
+                } else if (theEvent.name.equals("KeyboardDown")) {
+                    page.keyboard().down(String.valueOf(eventData.get("key")));                
                     // } else if (theEvent.name.equals("WaitForSelector")) {
                     // page.waitForSelector(String.valueOf(eventData.get("selector")));
                     // } else if (theEvent.name.equals("WaitForTimeout")) {
