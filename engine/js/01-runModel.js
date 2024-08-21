@@ -209,6 +209,7 @@ function execute(node, token) {
       case "switch":
         return [switchNode(node, cloneToken)]
       case "change":
+        bp.log.info("Change: {0}", node)
         return [RED.nodesHandlers.change(node, cloneToken)]
       case "log":
         if (node.level === 'info')
@@ -290,6 +291,7 @@ function execute(node, token) {
             event = sync({ block: defaultEventSetDefinition(node, cloneToken) })
           }
         }
+        cloneToken.lastEvent = event.data;
         return [cloneToken]
     }
   } finally {
