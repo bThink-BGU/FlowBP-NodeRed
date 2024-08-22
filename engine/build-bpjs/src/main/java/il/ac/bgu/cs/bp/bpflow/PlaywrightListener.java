@@ -1,8 +1,9 @@
 package il.ac.bgu.cs.bp.bpflow;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.mozilla.javascript.NativeObject;
 
@@ -43,10 +44,33 @@ public class PlaywrightListener implements BProgramRunnerListener {
                     pages.put(String.valueOf(eventData.get("page")), page);
                 } else if (theEvent.name.equals("Click")) {
                     page.click(String.valueOf(eventData.get("locator")));
+                } else if (theEvent.name.equals("Fill")) {
+                    page.fill(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("text")));
+                } else if (theEvent.name.equals("Navigate")) {
+                    page.navigate(String.valueOf(eventData.get("url")));
+                } else if (theEvent.name.equals("CloseBrowser")) {
+                    page.close();
+                } else if (theEvent.name.equals("WaitForTimeout")) {
+                    page.waitForTimeout(Integer.parseInt(String.valueOf(eventData.get("timeout"))));
+                } else if (theEvent.name.equals("WaitForSelector")) {
+                    page.waitForSelector(String.valueOf(eventData.get("selector")));
+                } else if (theEvent.name.equals("Screenshot")) {
+                    Path screenshotPath = Paths.get(String.valueOf(eventData.get("path")));
+                    page.screenshot(new Page.ScreenshotOptions().setPath(screenshotPath));
+                } else if (theEvent.name.equals("SelectOption")) {
+                    page.selectOption(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("value")));
+                } else if (theEvent.name.equals("Check")) {
+                    page.check(String.valueOf(eventData.get("locator")));
+                } else if (theEvent.name.equals("Uncheck")) {
+                    page.uncheck(String.valueOf(eventData.get("locator")));
+                } else if (theEvent.name.equals("KeyboardPress")) {
+                    page.press(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("key")));
+                } else if (theEvent.name.equals("KeyboardUp")) {
+                    page.keyboard().up(String.valueOf(eventData.get("key")));
                 } else if (theEvent.name.equals("Type")) {
                     page.type(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("text")));
                 } else if (theEvent.name.equals("KeyboardDown")) {
-                    page.keyboard().down(String.valueOf(eventData.get("key")));                
+                    page.keyboard().down(String.valueOf(eventData.get("key")));
                     // } else if (theEvent.name.equals("WaitForSelector")) {
                     // page.waitForSelector(String.valueOf(eventData.get("selector")));
                     // } else if (theEvent.name.equals("WaitForTimeout")) {
