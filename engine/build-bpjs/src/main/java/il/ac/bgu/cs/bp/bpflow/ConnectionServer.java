@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class ConnectionServer extends WebSocketServer {
 
-    Set <WebSocket> connections = new HashSet<>();
+    Set<WebSocket> connections = new HashSet<>();
 
     public ConnectionServer(InetSocketAddress address) {
         super(address);
@@ -36,8 +36,8 @@ public class ConnectionServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        //System.out.println("Message received: " + message);
-        
+        // System.out.println("Message received: " + message);
+
         // Broadcast the received message to all connected clients
         broadcast(message);
 
@@ -62,7 +62,7 @@ public class ConnectionServer extends WebSocketServer {
     }
 
     public static void main(String[] args) {
-        WebSocketServer server = new ConnectionServer(new InetSocketAddress(8080));
+        WebSocketServer server = new ConnectionServer(new InetSocketAddress(8085));
         server.start();
     }
 }

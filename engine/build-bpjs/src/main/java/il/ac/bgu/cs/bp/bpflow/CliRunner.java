@@ -242,7 +242,7 @@ public class CliRunner {
 
             // Add the WebSocket event selection strategy that will allow the user to select
             // the events if the dashboard is connected
-            ess = new WebSocketEventSelectionStrategyDecorator(new URI("ws://localhost:8080"), ess);
+            ess = new WebSocketEventSelectionStrategyDecorator(new URI("ws://localhost:8085"), ess);
 
             bpp.setEventSelectionStrategy(ess);
             BProgramRunner bpr = new BProgramRunner(bpp);
@@ -252,7 +252,7 @@ public class CliRunner {
             }
 
             // Report the events to the dashboard
-            bpr.addListener(new WebSocketRunnerListener(new URI("ws://localhost:8080")));
+            bpr.addListener(new WebSocketRunnerListener(new URI("ws://localhost:8085")));
             bpr.addListener(new PlaywrightListener());
 
             bpr.run();
