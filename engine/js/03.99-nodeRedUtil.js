@@ -230,6 +230,7 @@
       // This must be kept in sync with validatePropertyExpression
       // in editor/js/ui/utils.js
 
+      bp.log.info("normalisePropertyExpression: str={0}; msg={1}; toString={2}", str, msg, toString)
       let length = str.length;
       if (length === 0) {
         throw this.createError("INVALID_EXPR", "Invalid property expression: zero-length");
