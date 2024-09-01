@@ -274,13 +274,11 @@ function execute(node, token) {
         event = sync(stmt)
         return [cloneToken]
       case "browser":
-        bp.log.info("StartBrowser: {0}", node);
         event = sync({ request: bp.Event("StartBrowser", { lib: "playwright", url: String(node.url), page: String(node.page) }) })
         cloneToken.page = node.page
         return [cloneToken]
-
       default:
-        if (this[node.type]) {
+        if (node.type != "EventSet" && this[node.type]) {
           this[node.type](node, cloneToken)
         } else {
           if (node.eventType == 'request') {
@@ -291,7 +289,7 @@ function execute(node, token) {
             event = sync({ block: defaultEventSetDefinition(node, cloneToken) })
           }
         }
-        cloneToken.lastEvent = event.data;
+        cloneToken.lastEvent = Object.assign({}, event.data, { event: event.name });
         return [cloneToken]
     }
   } finally {
@@ -311,6 +309,26 @@ function execute(node, token) {
 }
 
 function defaultEventSetDefinition(node, msg) {
+
+  if (node.type === 'EventSet') {
+    bp.log.info("EventSet: {0} / filter: {1}", node.name, node.filter)
+    const expr = RED.util.prepareJSONataExpression(node.filter, node);
+
+    return bp.EventSet(node.name, function (e) {
+      const eventDataCopy = Object.assign({}, e.data, { event: e.name, msg: msg });
+      try {
+        bp.log.info("json is {0}", eventDataCopy);
+        const result = RED.util.evaluateJSONataExpression(expr, eventDataCopy);
+        bp.log.info("Result of {0} is {1}", node.filter, result);
+        return !!result;
+      } catch (err) {
+        return false;
+      }
+    });
+  }
+
+
+
   function conditionForField(msg, node, field) {
     let target = '';
     if (node[field] !== undefined && node[field] !== "") {
@@ -338,7 +356,6 @@ function defaultEventSetDefinition(node, msg) {
     }
   }
   condition += ' })'
-  bp.log.info(condition)
   return eval(condition)
 }
 
