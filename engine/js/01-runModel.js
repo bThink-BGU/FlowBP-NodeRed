@@ -209,7 +209,6 @@ function execute(node, token) {
       case "switch":
         return [switchNode(node, cloneToken)]
       case "change":
-        bp.log.info("Change: {0}", node)
         return [RED.nodesHandlers.change(node, cloneToken)]
       case "log":
         if (node.level === 'info')
@@ -309,22 +308,21 @@ function execute(node, token) {
 }
 
 function defaultEventSetDefinition(node, msg) {
-
-  if (node.type === 'EventSet') {
-    bp.log.info("EventSet: {0} / filter: {1}", node.name, node.filter)
-    const expr = RED.util.prepareJSONataExpression(node.filter, node);
-
-    return bp.EventSet(node.name, function (e) {
+  function getEventSet(name, expr, _msg) {
+    const msg = Object.assign({}, _msg);
+    return bp.EventSet(name+"/"+JSON.stringify(_msg), function (e) {
       const eventDataCopy = Object.assign({}, e.data, { event: e.name, msg: msg });
       try {
-        bp.log.info("json is {0}", eventDataCopy);
-        const result = RED.util.evaluateJSONataExpression(expr, eventDataCopy);
-        bp.log.info("Result of {0} is {1}", node.filter, result);
-        return !!result;
+        return !!RED.util.evaluateJSONataExpression(expr, eventDataCopy);
       } catch (err) {
         return false;
       }
     });
+  }
+
+  if (node.type === 'EventSet') {
+    const expr = RED.util.prepareJSONataExpression(node.filter, node);
+    return getEventSet(node.name, expr, msg);
   }
 
 
