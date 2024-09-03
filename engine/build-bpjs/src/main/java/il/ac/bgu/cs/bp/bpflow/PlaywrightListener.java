@@ -12,6 +12,7 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.assertions.PlaywrightAssertions;
 
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListener;
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
@@ -71,18 +72,19 @@ public class PlaywrightListener implements BProgramRunnerListener {
                     page.type(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("text")));
                 } else if (theEvent.name.equals("KeyboardDown")) {
                     page.keyboard().down(String.valueOf(eventData.get("key")));
-                    // } else if (theEvent.name.equals("WaitForSelector")) {
-                    // page.waitForSelector(String.valueOf(eventData.get("selector")));
-                    // } else if (theEvent.name.equals("WaitForTimeout")) {
-                    // page.waitForTimeout(Integer.parseInt(String.valueOf(eventData.get("timeout"))));
-                    // } else if (theEvent.name.equals("Screenshot")) {
-                    // page.screenshot(
-                    // new
-                    // Page.ScreenshotOptions().setPath(Paths.get(String.valueOf(eventData.get("path")))));
+                } else if (theEvent.name.equals("AssertNotOnPage")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).hasCount(0);
+                }
+                else if (theEvent.name.equals("AssertIsDisabled")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).isDisabled();
                 }
 
             }
-        } catch (ClassCastException e) {
+        } catch (
+
+        ClassCastException e) {
         }
     }
 

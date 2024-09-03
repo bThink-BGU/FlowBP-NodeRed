@@ -72,7 +72,9 @@
             content: " ▼";
             font-size: 0.8em;
         }
-
+        .expandable.visible {
+             display: block;
+        }
         .details {
             display: none;
             margin-left: 20px;
@@ -207,12 +209,25 @@
                 var select = document.createElement('select');
                 select.id = 'eventSelect';
                 eventsArray.forEach(function (event) {
-                    var option = document.createElement('option');
+                    const option = document.createElement('option');
                     option.value = event.name;
+
                     option.textContent = event.name;
+           
+                    // Add event.maybeData fields if not null
+                    let maybeDataText = '';
+                    if (event.maybeData) {
+                        maybeDataText = Object.entries(event.maybeData)
+                            .filter(([key, value]) => value !== null)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ');
+
+                        option.textContent += ` (${maybeDataText})`;
+                    }
+
+           
                     select.appendChild(option);
                 });
-
                 var selectButton = document.createElement('button');
                 selectButton.textContent = 'Select Event';
                 selectButton.onclick = function () {
