@@ -220,16 +220,24 @@ function execute(node, token) {
 
         return []
       case "loop":
+        // TODO: add support for specifying the counter name
+
+        const to = parseInt(getField(node, cloneToken, "to"));;
+        const skip = parseInt(getField(node, cloneToken, "skip"));
+        const from = parseInt(getField(node, cloneToken, "from"));
+
+        bp.log.info("from: {0}, to: {1}, skip: {2}", from, to, skip)
+
         if ("count" in cloneToken) {
-          if (cloneToken.count + 1 < node.to) {
-            cloneToken.count += parseInt(node.skip)
+          if (cloneToken.count + 1 < to) {
+            cloneToken.count += skip;
             return [cloneToken, undefined]
           } else {
             delete cloneToken.count
             return [undefined, cloneToken]
           }
         } else {
-          cloneToken.count = parseInt(node.from)
+          cloneToken.count = from;
           return [cloneToken, undefined]
         }
 
@@ -310,7 +318,7 @@ function execute(node, token) {
 function defaultEventSetDefinition(node, msg) {
   function getEventSet(name, expr, _msg) {
     const msg = Object.assign({}, _msg);
-    return bp.EventSet(name+"/"+JSON.stringify(_msg), function (e) {
+    return bp.EventSet(name + "/" + JSON.stringify(_msg), function (e) {
       const eventDataCopy = Object.assign({}, e.data, { event: e.name, msg: msg });
       try {
         return !!RED.util.evaluateJSONataExpression(expr, eventDataCopy);
