@@ -243,11 +243,11 @@ function execute(node, token) {
 
       case "if-then-else":
         if (node.condition) {
-          let condition = node.condition.replace(/tkn\./g, 'cloneToken.')
+          let condition = node.condition.replace(/msg\./g, 'cloneToken.')
           if (eval(condition)) {  // "3333+1" -> 3334
-            return [cloneToken, undefined]
-          } else {
             return [undefined, cloneToken]
+          } else {
+            return [cloneToken, undefined]
           }
         }
 
