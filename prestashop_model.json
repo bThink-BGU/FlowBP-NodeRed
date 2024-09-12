@@ -67,8 +67,8 @@
             "7299ea75674a38bb",
             "3f3cbeabccc9d086"
         ],
-        "x": 414,
-        "y": 404,
+        "x": 254,
+        "y": 244,
         "w": 772,
         "h": 189
     },
@@ -112,7 +112,7 @@
             "8903c0fb27598b82",
             "e1ec884910b5e7c9"
         ],
-        "x": 594,
+        "x": 694,
         "y": 219,
         "w": 232,
         "h": 154
@@ -241,7 +241,7 @@
         "page": "page",
         "pageRType": "msg",
         "pageR": "tmp",
-        "x": 635,
+        "x": 735,
         "y": 260,
         "wires": [
             []
@@ -261,7 +261,7 @@
         "filter": "lib='prestashop' and msg.page=page",
         "filterRType": "jsonata",
         "filterR": "tmp",
-        "x": 710,
+        "x": 810,
         "y": 320,
         "wires": [
             []
@@ -1321,6 +1321,274 @@
                 "c6798590ab6e2c39"
             ]
         ]
+    },
+    {
+        "id": "5321adc57fb77f09",
+        "type": "Checkout",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "x": 360,
+        "y": 1100,
+        "wires": [
+            [
+                "35384adb85653353"
+            ]
+        ]
+    },
+    {
+        "id": "fc613cb1eef8f705",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 190,
+        "y": 1100,
+        "wires": [
+            [
+                "5321adc57fb77f09"
+            ]
+        ]
+    },
+    {
+        "id": "35384adb85653353",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "category",
+                "pt": "msg",
+                "to": "lastEvent.category",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "quantity",
+                "pt": "msg",
+                "to": "lastEvent.quantity",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 455,
+        "y": 1100,
+        "wires": [
+            [
+                "5321adc57fb77f09",
+                "8e74543aa7b75004"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "8e74543aa7b75004",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the Cart Icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#_desktop_cart span.hidden-sm-down",
+        "x": 770,
+        "y": 1100,
+        "wires": [
+            [
+                "d04e225d4cf4392c"
+            ]
+        ]
+    },
+    {
+        "id": "d04e225d4cf4392c",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Proceed to Checkout",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "div.cart-grid-right a",
+        "x": 980,
+        "y": 1100,
+        "wires": [
+            [
+                "f6f71d183a0374a1"
+            ]
+        ]
+    },
+    {
+        "id": "f6f71d183a0374a1",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Continue",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "div.clearfix > button",
+        "x": 1180,
+        "y": 1100,
+        "wires": [
+            [
+                "ce21a816de9cbc59"
+            ]
+        ]
+    },
+    {
+        "id": "ce21a816de9cbc59",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Delivery Step button",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#checkout-delivery-step button",
+        "x": 1380,
+        "y": 1100,
+        "wires": [
+            [
+                "6020c2df4028a255"
+            ]
+        ]
+    },
+    {
+        "id": "6020c2df4028a255",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Agree to terms",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#conditions_to_approve\\[terms-and-conditions\\]",
+        "x": 1600,
+        "y": 1100,
+        "wires": [
+            [
+                "53dbb255f45c99b8"
+            ]
+        ]
+    },
+    {
+        "id": "53dbb255f45c99b8",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Place Order",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#payment-confirmation button",
+        "x": 1810,
+        "y": 1100,
+        "wires": [
+            [
+                "d955e5813f117fe7"
+            ]
+        ]
+    },
+    {
+        "id": "d955e5813f117fe7",
+        "type": "EndOfAction",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"page\"]",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "x": 1945,
+        "y": 1100,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-fast-forward",
+        "l": false
     },
     {
         "id": "79bd6cd79dbe18d7",
@@ -2793,6 +3061,29 @@
         "x": 670,
         "y": 420,
         "wires": [
+            [
+                "506ab8270f7233df"
+            ]
+        ]
+    },
+    {
+        "id": "506ab8270f7233df",
+        "type": "Checkout",
+        "z": "77c5dde6f1fa65d6",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "x": 860,
+        "y": 420,
+        "wires": [
             []
         ]
     },
@@ -2801,8 +3092,8 @@
         "type": "start",
         "z": "df6b8126913b8e4a",
         "name": "",
-        "x": 270,
-        "y": 340,
+        "x": 110,
+        "y": 180,
         "wires": [
             [
                 "f88f04e8062076e7"
@@ -2832,8 +3123,8 @@
         "password": "",
         "passwordRType": "str",
         "passwordR": "alice.wang@prestahsop.com",
-        "x": 590,
-        "y": 340,
+        "x": 430,
+        "y": 180,
         "wires": [
             [
                 "a8730bb60becf966"
@@ -2847,8 +3138,8 @@
         "name": "Open a \\n user page",
         "page": "User2Page",
         "url": "http://localhost:8080/",
-        "x": 420,
-        "y": 340,
+        "x": 260,
+        "y": 180,
         "wires": [
             [
                 "851d2042e84e2354"
@@ -2878,8 +3169,8 @@
         "product": "",
         "productRType": "str",
         "productR": "Mug The adventure begins",
-        "x": 850,
-        "y": 340,
+        "x": 690,
+        "y": 180,
         "wires": [
             []
         ]
@@ -2889,8 +3180,8 @@
         "type": "start",
         "z": "df6b8126913b8e4a",
         "name": "",
-        "x": 270,
-        "y": 457,
+        "x": 110,
+        "y": 297,
         "wires": [
             [
                 "3f3cbeabccc9d086"
@@ -2920,8 +3211,8 @@
         "password": "",
         "passwordRType": "str",
         "passwordR": "alice.wang@prestahsop.com",
-        "x": 590,
-        "y": 220,
+        "x": 430,
+        "y": 60,
         "wires": [
             [
                 "545e1e9dbbb63917"
@@ -2935,8 +3226,8 @@
         "name": "Open a \\n user page",
         "page": "User1Page",
         "url": "http://localhost:8080/",
-        "x": 420,
-        "y": 220,
+        "x": 260,
+        "y": 60,
         "wires": [
             [
                 "2f64ed27e6e75988"
@@ -2948,8 +3239,8 @@
         "type": "start",
         "z": "df6b8126913b8e4a",
         "name": "",
-        "x": 270,
-        "y": 220,
+        "x": 110,
+        "y": 60,
         "wires": [
             [
                 "a9482e913515c701"
@@ -2983,8 +3274,8 @@
         "quantity": "1",
         "quantityRType": "num",
         "quantityR": "1",
-        "x": 840,
-        "y": 220,
+        "x": 680,
+        "y": 60,
         "wires": [
             []
         ]
@@ -3013,8 +3304,8 @@
         "product": "Mug The adventure begins",
         "productRType": "str",
         "productR": "tmp",
-        "x": 590,
-        "y": 540,
+        "x": 430,
+        "y": 380,
         "wires": [
             []
         ]
@@ -3039,8 +3330,8 @@
         "product": "",
         "productRType": "str",
         "productR": "Mug The adventure begins",
-        "x": 920,
-        "y": 457,
+        "x": 760,
+        "y": 297,
         "wires": [
             [
                 "d92e17c2e974ee6b"
@@ -3059,8 +3350,8 @@
         "page": "page",
         "pageRType": "msg",
         "pageR": "tmp",
-        "x": 1145,
-        "y": 457,
+        "x": 985,
+        "y": 297,
         "wires": [
             []
         ],
@@ -3091,8 +3382,8 @@
         "password": "",
         "passwordRType": "str",
         "passwordR": "prestashop_demo",
-        "x": 690,
-        "y": 457,
+        "x": 530,
+        "y": 297,
         "wires": [
             [
                 "7d6169c13fb6627c"
@@ -3107,8 +3398,8 @@
         "name": "Open an \\n admin page",
         "page": "AdminPage",
         "url": "http://localhost:8080/admina",
-        "x": 510,
-        "y": 457,
+        "x": 350,
+        "y": 297,
         "wires": [
             [
                 "7299ea75674a38bb"
