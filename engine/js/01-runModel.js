@@ -237,8 +237,12 @@ function execute(node, token) {
             return [undefined, cloneToken]
           }
         } else {
-          cloneToken.count = from;
-          return [cloneToken, undefined]
+          if (cloneToken.count + 1 < to) {
+            cloneToken.count = from;
+            return [cloneToken, undefined]
+          } else {
+            return [undefined, undefined]
+          }
         }
 
       case "if-then-else":
@@ -289,7 +293,11 @@ function execute(node, token) {
           this[node.type](node, cloneToken)
         } else {
           if (node.eventType == 'request') {
-            event = sync({ request: defaultEventDefinition(node, cloneToken) })
+            if (node.type == 'Marker') {
+              event = sync({ request: defaultEventDefinition(node, cloneToken) }, 100)
+            } else {
+              event = sync({ request: defaultEventDefinition(node, cloneToken) })
+            }
           } else if (node.eventType == 'waitFor') {
             event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
           } else if (node.eventType == 'block') {
