@@ -226,14 +226,14 @@
             "color": "#a4a4a4"
         },
         "nodes": [
-            "86a8478a8b98f73b",
-            "9df20df726e36b68",
-            "7a9713e0d9e838c2"
+            "7a9713e0d9e838c2",
+            "875d7f9307ccf35c",
+            "52a0021a7b74451f"
         ],
         "x": 734,
-        "y": 307,
+        "y": 327,
         "w": 312,
-        "h": 274
+        "h": 254
     },
     {
         "id": "6a10523bd2418953",
@@ -320,7 +320,7 @@
         "z": "9360c6f2270c3e4e",
         "name": "",
         "format": "javascript",
-        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"C:\\\\Users\\\\gera\\\\PrestaShopTesting\\\\Context\\\\config\\\\init.bat\")\n\n\n// Add entities\n// ctx.populateContext([\n//   ctx.Entity('purchase', 'system', { total: 0 }),\n// ]);\n\n\nvar c = 0;\n\n// Specify the effect of certain events on the context\nctx.registerEffect('AddToCart', function (data) {\n  ctx.insertEntity(\n    ctx.Entity(\"purchase_\" + (c++), \"purchase\", { price: data.price }) )\n})",
+        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"C:\\\\Users\\\\gera\\\\PrestaShopTesting\\\\Context\\\\config\\\\init.bat\")\n\n\n// Add entities\n// ctx.populateContext([\n//   ctx.Entity('purchase', 'system', { total: 0 }),\n// ]);\n\n\nvar c = 0;\n\n// Specify the effect of certain events on the context\nctx.registerEffect('AddToCart', function (data) {\n  bp.log.info(data);\n  ctx.insertEntity(    \n    ctx.Entity(\"purchase_\" + (c++), \"purchase\", { price: data.price }) )\n})",
         "x": 160,
         "y": 160,
         "wires": [],
@@ -1026,11 +1026,11 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#_desktop_cart span.hidden-sm-down",
-        "x": 630,
+        "x": 770,
         "y": 1100,
         "wires": [
             [
-                "d04e225d4cf4392c"
+                "22524da885c16ea4"
             ]
         ]
     },
@@ -1053,7 +1053,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "div.cart-grid-right a",
-        "x": 840,
+        "x": 1180,
         "y": 1100,
         "wires": [
             [
@@ -1080,7 +1080,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "div.clearfix > button",
-        "x": 1040,
+        "x": 1380,
         "y": 1100,
         "wires": [
             [
@@ -1107,7 +1107,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#checkout-delivery-step button",
-        "x": 1240,
+        "x": 1580,
         "y": 1100,
         "wires": [
             [
@@ -1134,7 +1134,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#conditions_to_approve\\[terms-and-conditions\\]",
-        "x": 1460,
+        "x": 1800,
         "y": 1100,
         "wires": [
             [
@@ -1161,7 +1161,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#payment-confirmation button",
-        "x": 1690,
+        "x": 1990,
         "y": 1100,
         "wires": [
             [
@@ -1634,7 +1634,7 @@
         "data": "page",
         "dataRType": "jsonata",
         "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Checkout\",\t   \"page\": msg.page,\t   \"expectedPrice\": msg.expectedPrice\t}",
-        "x": 1785,
+        "x": 2115,
         "y": 1100,
         "wires": [
             []
@@ -1669,22 +1669,35 @@
         ]
     },
     {
-        "id": "12363fb22d991fec",
-        "type": "Cold",
+        "id": "22524da885c16ea4",
+        "type": "AssertText",
         "z": "4ede39b5eb0ff042",
-        "name": "",
+        "name": "Check \\n Total Sum",
         "eventType": "request",
-        "internalFields": "[\"temperature\"]",
-        "temperatureType": "num",
-        "temperature": "",
-        "temperatureRType": "jsonata",
-        "temperatureR": "$sum(ctx[type=\"purchase\"].price)",
-        "x": 1645,
-        "y": 1160,
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"text\"]",
+        "libType": "str",
+        "lib": "playwright",
+        "libRType": "str",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "//span[text()='Total (tax incl.)']/following-sibling::span",
+        "textType": "str",
+        "text": "",
+        "textRType": "jsonata",
+        "textR": "\"€\" & $round($sum(ctx[type=\"purchase\"].price),2)",
+        "x": 940,
+        "y": 1100,
         "wires": [
-            []
-        ],
-        "l": false
+            [
+                "d04e225d4cf4392c"
+            ]
+        ]
     },
     {
         "id": "8138e5912f4056d8",
@@ -1713,8 +1726,8 @@
         "y": 420,
         "wires": [
             [
-                "86a8478a8b98f73b",
-                "9df20df726e36b68"
+                "875d7f9307ccf35c",
+                "52a0021a7b74451f"
             ]
         ]
     },
@@ -1743,102 +1756,6 @@
         "wires": [
             [
                 "ddb84f83b7f06b8f"
-            ]
-        ]
-    },
-    {
-        "id": "86a8478a8b98f73b",
-        "type": "AddToCart",
-        "z": "77c5dde6f1fa65d6",
-        "g": "e31057d9b0aa1d71",
-        "name": "Add to cart \\n \"Hummingbird printed sweater\"",
-        "eventType": "request",
-        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\"]",
-        "libType": "str",
-        "lib": "prestashop",
-        "libRType": "str",
-        "libR": "prestashop",
-        "pageType": "msg",
-        "page": "page",
-        "pageRType": "msg",
-        "pageR": "page",
-        "categoryType": "str",
-        "category": "",
-        "categoryRType": "str",
-        "categoryR": "Art",
-        "productType": "str",
-        "product": "",
-        "productRType": "str",
-        "productR": "Hummingbird printed sweater",
-        "quantityType": "num",
-        "quantity": "",
-        "quantityRType": "num",
-        "quantityR": "2",
-        "optType": "num",
-        "opt": "",
-        "optRType": "jsonata",
-        "optR": "[{\"name\": \"Size\", \"value\": \"L\"}, {\"name\": \"Size\", \"value\": \"M\"}]",
-        "likeType": "str",
-        "like": "",
-        "likeRType": "str",
-        "likeR": "Yes",
-        "priceType": "num",
-        "price": "",
-        "priceRType": "num",
-        "priceR": "38.24",
-        "x": 890,
-        "y": 360,
-        "wires": [
-            [
-                "08964a13b79bc0f3"
-            ]
-        ]
-    },
-    {
-        "id": "9df20df726e36b68",
-        "type": "AddToCart",
-        "z": "77c5dde6f1fa65d6",
-        "g": "e31057d9b0aa1d71",
-        "name": "Add to cart \\n \"Mug The best is yet to come\"",
-        "eventType": "request",
-        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\"]",
-        "libType": "str",
-        "lib": "prestashop",
-        "libRType": "str",
-        "libR": "prestashop",
-        "pageType": "msg",
-        "page": "page",
-        "pageRType": "msg",
-        "pageR": "page",
-        "categoryType": "str",
-        "category": "",
-        "categoryRType": "str",
-        "categoryR": "Art",
-        "productType": "str",
-        "product": "",
-        "productRType": "str",
-        "productR": "Mug The best is yet to come",
-        "quantityType": "num",
-        "quantity": "",
-        "quantityRType": "num",
-        "quantityR": "1",
-        "optType": "num",
-        "opt": "",
-        "optRType": "jsonata",
-        "optR": "[]",
-        "likeType": "str",
-        "like": "",
-        "likeRType": "str",
-        "likeR": "Yes",
-        "priceType": "num",
-        "price": "",
-        "priceRType": "num",
-        "priceR": "35.00",
-        "x": 890,
-        "y": 460,
-        "wires": [
-            [
-                "08964a13b79bc0f3"
             ]
         ]
     },
@@ -1888,17 +1805,113 @@
         "l": false
     },
     {
-        "id": "08964a13b79bc0f3",
+        "id": "875d7f9307ccf35c",
+        "type": "AddToCart",
+        "z": "77c5dde6f1fa65d6",
+        "g": "e31057d9b0aa1d71",
+        "name": "Add to cart \\n \"Hummingbird printed sweater\"",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\",\"like\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "Clothes",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "Hummingbird printed sweater",
+        "quantityType": "num",
+        "quantity": "",
+        "quantityRType": "num",
+        "quantityR": "2",
+        "optType": "jsonata",
+        "opt": "",
+        "optRType": "jsonata",
+        "optR": "[{\"name\": \"Size\", \"value\": \"L\"}, {\"name\": \"Size\", \"value\": \"M\"}]",
+        "likeType": "str",
+        "like": "",
+        "likeRType": "str",
+        "likeR": "Yes",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "57.44",
+        "x": 890,
+        "y": 380,
+        "wires": [
+            [
+                "686117cbf722b990"
+            ]
+        ]
+    },
+    {
+        "id": "52a0021a7b74451f",
+        "type": "AddToCart",
+        "z": "77c5dde6f1fa65d6",
+        "g": "e31057d9b0aa1d71",
+        "name": "Add to cart \\n \"Mug The best is yet to come",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\",\"like\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "Accessories",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "Mug The best is yet to come",
+        "quantityType": "num",
+        "quantity": "",
+        "quantityRType": "num",
+        "quantityR": "1",
+        "optType": "jsonata",
+        "opt": "",
+        "optRType": "jsonata",
+        "optR": "[]",
+        "likeType": "str",
+        "like": "",
+        "likeRType": "str",
+        "likeR": "Yes",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "11.90",
+        "x": 880,
+        "y": 460,
+        "wires": [
+            [
+                "686117cbf722b990"
+            ]
+        ]
+    },
+    {
+        "id": "686117cbf722b990",
         "type": "Marker",
         "z": "77c5dde6f1fa65d6",
         "name": "",
-        "eventType": "waitFor",
+        "eventType": "request",
         "internalFields": "[\"data\"]",
         "dataType": "jsonata",
-        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillAddToCartDetails',\t    'page' : msg.page\t}",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
         "dataRType": "jsonata",
-        "dataR": "tmp",
-        "x": 1095,
+        "dataR": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
+        "x": 1105,
         "y": 400,
         "wires": [
             [
