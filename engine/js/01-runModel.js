@@ -393,6 +393,17 @@ function getField(node, msg, field) {
       return JSON.parse(node[field]);
     case 'jsonata':
       try {
+        msg = RED.util.cloneMessage(msg);
+
+        // Cretae an array of the context entry objects
+        msg.ctx = [];
+        var javaIterator = bp.store.entrySet().iterator();
+        while (javaIterator.hasNext()) {
+          var entry = javaIterator.next();
+          msg.ctx.push(entry.getValue());
+        }
+
+
         let expr = RED.util.prepareJSONataExpression(node[field], node);
         return RED.util.evaluateJSONataExpression(expr, msg)
       } catch (err) {
