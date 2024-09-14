@@ -27,7 +27,7 @@
         "id": "f97654df38260c7e",
         "type": "tab",
         "label": "Store Manager Actions",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -115,7 +115,7 @@
         "x": 614,
         "y": 219,
         "w": 232,
-        "h": 214
+        "h": 194
     },
     {
         "id": "43e8d00a76255804",
@@ -213,6 +213,29 @@
         "h": 182
     },
     {
+        "id": "e31057d9b0aa1d71",
+        "type": "group",
+        "z": "77c5dde6f1fa65d6",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "86a8478a8b98f73b",
+            "9df20df726e36b68",
+            "7a9713e0d9e838c2"
+        ],
+        "x": 734,
+        "y": 307,
+        "w": 312,
+        "h": 274
+    },
+    {
         "id": "6a10523bd2418953",
         "type": "start",
         "z": "9360c6f2270c3e4e",
@@ -286,7 +309,7 @@
         "filterRType": "jsonata",
         "filterR": "tmp",
         "x": 730,
-        "y": 380,
+        "y": 360,
         "wires": [
             []
         ]
@@ -297,7 +320,7 @@
         "z": "9360c6f2270c3e4e",
         "name": "",
         "format": "javascript",
-        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"C:\\\\Users\\\\gera\\\\PrestaShopTesting\\\\Context\\\\config\\\\init.bat\")\n\n\n// Add entities\nctx.populateContext([\n  ctx.Entity('purchase', 'system', { total: 0 }),\n]);",
+        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"C:\\\\Users\\\\gera\\\\PrestaShopTesting\\\\Context\\\\config\\\\init.bat\")\n\n\n// Add entities\n// ctx.populateContext([\n//   ctx.Entity('purchase', 'system', { total: 0 }),\n// ]);\n\n\nvar c = 0;\n\n// Specify the effect of certain events on the context\nctx.registerEffect('AddToCart', function (data) {\n  ctx.insertEntity(\n    ctx.Entity(\"purchase_\" + (c++), \"purchase\", { price: data.price }) )\n})",
         "x": 160,
         "y": 160,
         "wires": [],
@@ -368,6 +391,13 @@
                 "p": "like",
                 "pt": "msg",
                 "to": "lastEvent.like",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "price",
+                "pt": "msg",
+                "to": "lastEvent.price",
                 "tot": "msg"
             }
         ],
@@ -907,29 +937,6 @@
         ]
     },
     {
-        "id": "5321adc57fb77f09",
-        "type": "Checkout",
-        "z": "4ede39b5eb0ff042",
-        "name": "",
-        "eventType": "waitFor",
-        "internalFields": "[\"lib\",\"page\"]",
-        "libType": "str",
-        "lib": "prestashop",
-        "libRType": "str",
-        "libR": "tmp",
-        "pageType": "msg",
-        "page": "",
-        "pageRType": "msg",
-        "pageR": "tmp",
-        "x": 360,
-        "y": 1100,
-        "wires": [
-            [
-                "35384adb85653353"
-            ]
-        ]
-    },
-    {
         "id": "fc613cb1eef8f705",
         "type": "start",
         "z": "4ede39b5eb0ff042",
@@ -939,7 +946,7 @@
         "y": 1100,
         "wires": [
             [
-                "5321adc57fb77f09"
+                "1823f83b4ac3d7df"
             ]
         ]
     },
@@ -976,6 +983,13 @@
                 "pt": "msg",
                 "to": "lastEvent.quantity",
                 "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "expectedPrice",
+                "pt": "msg",
+                "to": "lastEvent.expectedPrice",
+                "tot": "msg"
             }
         ],
         "action": "",
@@ -987,8 +1001,8 @@
         "y": 1100,
         "wires": [
             [
-                "5321adc57fb77f09",
-                "8e74543aa7b75004"
+                "8e74543aa7b75004",
+                "1823f83b4ac3d7df"
             ]
         ],
         "l": false
@@ -1147,7 +1161,7 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#payment-confirmation button",
-        "x": 1670,
+        "x": 1690,
         "y": 1100,
         "wires": [
             [
@@ -1619,9 +1633,54 @@
         "dataType": "msg",
         "data": "page",
         "dataRType": "jsonata",
-        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Checkout\",\t   \"page\": msg.page\t}",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Checkout\",\t   \"page\": msg.page,\t   \"expectedPrice\": msg.expectedPrice\t}",
         "x": 1785,
         "y": 1100,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "1823f83b4ac3d7df",
+        "type": "Checkout",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"ecpectedPrice\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "ecpectedPriceType": "num",
+        "ecpectedPrice": "",
+        "ecpectedPriceRType": "num",
+        "ecpectedPriceR": "0",
+        "x": 360,
+        "y": 1100,
+        "wires": [
+            [
+                "35384adb85653353"
+            ]
+        ]
+    },
+    {
+        "id": "12363fb22d991fec",
+        "type": "Cold",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"temperature\"]",
+        "temperatureType": "num",
+        "temperature": "",
+        "temperatureRType": "jsonata",
+        "temperatureR": "$sum(ctx[type=\"purchase\"].price)",
+        "x": 1645,
+        "y": 1160,
         "wires": [
             []
         ],
@@ -1650,11 +1709,12 @@
         "password": "",
         "passwordRType": "str",
         "passwordR": "alice.wang@prestahsop.com",
-        "x": 490,
-        "y": 120,
+        "x": 650,
+        "y": 420,
         "wires": [
             [
-                "86a8478a8b98f73b"
+                "86a8478a8b98f73b",
+                "9df20df726e36b68"
             ]
         ]
     },
@@ -1665,8 +1725,8 @@
         "name": "Open a \\n user page",
         "page": "User1Page",
         "url": "http://localhost:8080/",
-        "x": 320,
-        "y": 120,
+        "x": 480,
+        "y": 420,
         "wires": [
             [
                 "8138e5912f4056d8"
@@ -1678,8 +1738,8 @@
         "type": "start",
         "z": "77c5dde6f1fa65d6",
         "name": "",
-        "x": 170,
-        "y": 120,
+        "x": 330,
+        "y": 420,
         "wires": [
             [
                 "ddb84f83b7f06b8f"
@@ -1690,7 +1750,8 @@
         "id": "86a8478a8b98f73b",
         "type": "AddToCart",
         "z": "77c5dde6f1fa65d6",
-        "name": "",
+        "g": "e31057d9b0aa1d71",
+        "name": "Add to cart \\n \"Hummingbird printed sweater\"",
         "eventType": "request",
         "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\"]",
         "libType": "str",
@@ -1721,21 +1782,26 @@
         "like": "",
         "likeRType": "str",
         "likeR": "Yes",
-        "x": 670,
-        "y": 120,
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "38.24",
+        "x": 890,
+        "y": 360,
         "wires": [
             [
-                "506ab8270f7233df"
+                "08964a13b79bc0f3"
             ]
         ]
     },
     {
-        "id": "506ab8270f7233df",
-        "type": "Checkout",
+        "id": "9df20df726e36b68",
+        "type": "AddToCart",
         "z": "77c5dde6f1fa65d6",
-        "name": "",
+        "g": "e31057d9b0aa1d71",
+        "name": "Add to cart \\n \"Mug The best is yet to come\"",
         "eventType": "request",
-        "internalFields": "[\"lib\",\"page\"]",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\"]",
         "libType": "str",
         "lib": "prestashop",
         "libRType": "str",
@@ -1744,11 +1810,103 @@
         "page": "page",
         "pageRType": "msg",
         "pageR": "page",
-        "x": 860,
-        "y": 120,
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "Art",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "Mug The best is yet to come",
+        "quantityType": "num",
+        "quantity": "",
+        "quantityRType": "num",
+        "quantityR": "1",
+        "optType": "num",
+        "opt": "",
+        "optRType": "jsonata",
+        "optR": "[]",
+        "likeType": "str",
+        "like": "",
+        "likeRType": "str",
+        "likeR": "Yes",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "35.00",
+        "x": 890,
+        "y": 460,
+        "wires": [
+            [
+                "08964a13b79bc0f3"
+            ]
+        ]
+    },
+    {
+        "id": "bf2e9441aab75cde",
+        "type": "Checkout",
+        "z": "77c5dde6f1fa65d6",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"ecpectedPrice\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "ecpectedPriceType": "num",
+        "ecpectedPrice": "",
+        "ecpectedPriceRType": "num",
+        "ecpectedPriceR": "34",
+        "x": 1240,
+        "y": 400,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "7a9713e0d9e838c2",
+        "type": "Marker",
+        "z": "77c5dde6f1fa65d6",
+        "g": "e31057d9b0aa1d71",
+        "name": "",
+        "eventType": "block",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
+        "dataRType": "jsonata",
+        "dataR": "tmp",
+        "x": 775,
+        "y": 540,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
+    },
+    {
+        "id": "08964a13b79bc0f3",
+        "type": "Marker",
+        "z": "77c5dde6f1fa65d6",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillAddToCartDetails',\t    'page' : msg.page\t}",
+        "dataRType": "jsonata",
+        "dataR": "tmp",
+        "x": 1095,
+        "y": 400,
+        "wires": [
+            [
+                "bf2e9441aab75cde"
+            ]
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
     },
     {
         "id": "79bd6cd79dbe18d7",
@@ -2805,7 +2963,9 @@
         "x": 680,
         "y": 60,
         "wires": [
-            []
+            [
+                "36b3977003c2cc10"
+            ]
         ]
     },
     {
@@ -2933,6 +3093,31 @@
         ],
         "icon": "font-awesome/fa-fast-forward",
         "l": false
+    },
+    {
+        "id": "36b3977003c2cc10",
+        "type": "Checkout",
+        "z": "df6b8126913b8e4a",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "ecpectedPriceType": "num",
+        "ecpectedPrice": "",
+        "ecpectedPriceRType": "jsonata",
+        "ecpectedPriceR": "$sum(ctx[type=\"purchase\"].price)",
+        "x": 920,
+        "y": 60,
+        "wires": [
+            []
+        ]
     },
     {
         "id": "ef58ccddfcaa7c37",
