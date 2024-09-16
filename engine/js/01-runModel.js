@@ -286,6 +286,7 @@ function execute(node, token) {
         return [cloneToken]
       case "browser":
         event = sync({ request: bp.Event("StartBrowser", { lib: "playwright", url: String(node.url), page: String(node.page) }) })
+        java.lang.Thread.sleep(2000)
         cloneToken.page = node.page
         return [cloneToken]
       default:
@@ -293,10 +294,14 @@ function execute(node, token) {
           this[node.type](node, cloneToken)
         } else {
           if (node.eventType == 'request') {
+            event = defaultEventDefinition(node, cloneToken)
             if (node.type == 'Marker') {
-              event = sync({ request: defaultEventDefinition(node, cloneToken) }, 100)
+              event = sync({ request:  event}, 100)
             } else {
-              event = sync({ request: defaultEventDefinition(node, cloneToken) })
+              event = sync({ request: event })
+            }
+            if("playwright".equals(event.data.lib)) {
+              java.lang.Thread.sleep(500)
             }
           } else if (node.eventType == 'waitFor') {
             event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
