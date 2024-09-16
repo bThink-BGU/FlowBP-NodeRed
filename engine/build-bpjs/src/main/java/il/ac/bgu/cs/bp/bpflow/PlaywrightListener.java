@@ -32,7 +32,7 @@ public class PlaywrightListener implements BProgramRunnerListener {
         try {
             var eventData = (NativeObject) theEvent.getData();
 
-            if (eventData != null && eventData.containsKey("lib") && eventData.get("lib").equals("playwright")) {
+            if (eventData != null && eventData.containsKey("lib") && "playwright".equals(eventData.get("lib"))) {
                 System.err.println("Playwright event: " + theEvent);
 
                 Page page = null;
@@ -114,9 +114,7 @@ public class PlaywrightListener implements BProgramRunnerListener {
                     PlaywrightAssertions.assertThat(page.locator(locator)).hasCount(count);
                 } 
             }
-        } catch (
-
-        ClassCastException e) {
+        } catch (ClassCastException ignored) {
         }
     }
 
