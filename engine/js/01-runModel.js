@@ -286,7 +286,7 @@ function execute(node, token) {
         return [cloneToken]
       case "browser":
         event = sync({ request: bp.Event("StartBrowser", { lib: "playwright", url: String(node.url), page: String(node.page) }) })
-        java.lang.Thread.sleep(2000)
+        //java.lang.Thread.sleep(2000)
         cloneToken.page = node.page
         return [cloneToken]
       default:

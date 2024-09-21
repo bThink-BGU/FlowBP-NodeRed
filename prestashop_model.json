@@ -19,7 +19,7 @@
         "id": "77c5dde6f1fa65d6",
         "type": "tab",
         "label": "User Stories",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -40,10 +40,10 @@
         "env": []
     },
     {
-        "id": "53a4d32a120d2c58",
+        "id": "c4de1c8e2779ced3",
         "type": "tab",
-        "label": "Hot Cold (Context)",
-        "disabled": true,
+        "label": "draft",
+        "disabled": false,
         "info": "",
         "env": []
     },
@@ -146,50 +146,6 @@
         "h": 394
     },
     {
-        "id": "c6c7d5eb060dc596",
-        "type": "group",
-        "z": "53a4d32a120d2c58",
-        "style": {
-            "stroke": "#999999",
-            "stroke-opacity": "1",
-            "fill": "none",
-            "fill-opacity": "1",
-            "label": true,
-            "label-position": "nw",
-            "color": "#a4a4a4"
-        },
-        "nodes": [
-            "64a44e724789eba8",
-            "428dccc1b3707fcc"
-        ],
-        "x": 354,
-        "y": 279,
-        "w": 192,
-        "h": 142
-    },
-    {
-        "id": "fa05d669695e8abe",
-        "type": "group",
-        "z": "53a4d32a120d2c58",
-        "style": {
-            "stroke": "#999999",
-            "stroke-opacity": "1",
-            "fill": "none",
-            "fill-opacity": "1",
-            "label": true,
-            "label-position": "nw",
-            "color": "#a4a4a4"
-        },
-        "nodes": [
-            "d51ac8d4f822e03e",
-            "cb726091fa081cfe"
-        ],
-        "x": 614,
-        "y": 279,
-        "w": 192,
-        "h": 142
-    },
-    {
         "id": "a1f51a5678cfc8ef",
         "type": "group",
         "z": "4ede39b5eb0ff042",
@@ -230,8 +186,8 @@
             "875d7f9307ccf35c",
             "52a0021a7b74451f"
         ],
-        "x": 734,
-        "y": 327,
+        "x": 584,
+        "y": 107,
         "w": 312,
         "h": 254
     },
@@ -320,7 +276,7 @@
         "z": "9360c6f2270c3e4e",
         "name": "",
         "format": "javascript",
-        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"prestashop\\\\init.bat\")\n\n\n// Add entities\n// ctx.populateContext([\n//   ctx.Entity('purchase', 'system', { total: 0 }),\n// ]);\n\n\nvar c = 0;\n\n// Specify the effect of certain events on the context\nctx.registerEffect('AddToCart', function (data) {\n  bp.log.info(data);\n  ctx.insertEntity(    \n    ctx.Entity(\"purchase_\" + (c++), \"purchase\", { price: data.price }) )\n})",
+        "template": "/* global bp, java */\n\nfunction runCommand(cmd) { \n  try { \n    var process = java.lang.Runtime.getRuntime().exec(cmd); \n    process.waitFor(); \n    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream())); \n    var line = ''; \n    while ((line = reader.readLine()) != null) { \n      bp.log.info(line); \n    } \n  } catch (e) { \n    bp.log.info('Error: ' + e.message); \n  } \n}\n\nrunCommand(\"prestashop\\\\init.bat\")\n\nvar c = 0;\n\n\nctx.registerEffect('Marker', function (e) {\n  e = e.data;\n  if( e.type == \"EndOfAction\" && e.action == \"AddToCart\" ) {\n    ctx.insertEntity(    \n      ctx.Entity(\"purchase_\" + (c++), \"purchase\", { price: e.data.price }));\n  }\n})\n",
         "x": 160,
         "y": 160,
         "wires": [],
@@ -560,7 +516,7 @@
         "to": "",
         "reg": false,
         "x": 495,
-        "y": 960,
+        "y": 1160,
         "wires": [
             [
                 "d98e9fa7480660ab",
@@ -576,7 +532,7 @@
         "name": "",
         "payload": "{}",
         "x": 170,
-        "y": 960,
+        "y": 1160,
         "wires": [
             [
                 "64af955debb4ce54"
@@ -602,8 +558,8 @@
         "locator": "",
         "locatorRType": "jsonata",
         "locatorR": "$join([\"text=\", category])",
-        "x": 770,
-        "y": 960,
+        "x": 750,
+        "y": 1160,
         "wires": [
             [
                 "a4ec9b6989354139"
@@ -634,7 +590,7 @@
         "productRType": "str",
         "productR": "tmp",
         "x": 370,
-        "y": 960,
+        "y": 1160,
         "wires": [
             [
                 "5d7284ec94a4b6bd"
@@ -661,7 +617,7 @@
         "locatorRType": "str",
         "locatorR": "text=Add to cart",
         "x": 1160,
-        "y": 960,
+        "y": 1160,
         "wires": [
             [
                 "3f5a3b82e382748b"
@@ -688,7 +644,7 @@
         "locatorRType": "jsonata",
         "locatorR": "\"xpath=//a[contains(.,'\" & product & \"')]\"",
         "x": 950,
-        "y": 960,
+        "y": 1160,
         "wires": [
             [
                 "1d74b8c93ca57b87"
@@ -942,8 +898,8 @@
         "z": "4ede39b5eb0ff042",
         "name": "",
         "payload": "{}",
-        "x": 190,
-        "y": 1100,
+        "x": 170,
+        "y": 1300,
         "wires": [
             [
                 "1823f83b4ac3d7df"
@@ -997,8 +953,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 455,
-        "y": 1100,
+        "x": 435,
+        "y": 1300,
         "wires": [
             [
                 "8e74543aa7b75004",
@@ -1026,8 +982,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#_desktop_cart span.hidden-sm-down",
-        "x": 770,
-        "y": 1100,
+        "x": 750,
+        "y": 1300,
         "wires": [
             [
                 "22524da885c16ea4"
@@ -1053,8 +1009,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "div.cart-grid-right a",
-        "x": 1180,
-        "y": 1100,
+        "x": 1120,
+        "y": 1300,
         "wires": [
             [
                 "f6f71d183a0374a1"
@@ -1080,8 +1036,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "div.clearfix > button",
-        "x": 1380,
-        "y": 1100,
+        "x": 1320,
+        "y": 1300,
         "wires": [
             [
                 "ce21a816de9cbc59"
@@ -1107,8 +1063,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#checkout-delivery-step button",
-        "x": 1580,
-        "y": 1100,
+        "x": 1520,
+        "y": 1300,
         "wires": [
             [
                 "6020c2df4028a255"
@@ -1134,8 +1090,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#conditions_to_approve\\[terms-and-conditions\\]",
-        "x": 1800,
-        "y": 1100,
+        "x": 1740,
+        "y": 1300,
         "wires": [
             [
                 "53dbb255f45c99b8"
@@ -1161,8 +1117,8 @@
         "locator": "",
         "locatorRType": "str",
         "locatorR": "#payment-confirmation button",
-        "x": 1990,
-        "y": 1100,
+        "x": 1930,
+        "y": 1300,
         "wires": [
             [
                 "0a678d07f4eb6dda"
@@ -1617,7 +1573,7 @@
         "dataRType": "jsonata",
         "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"VerifyNotInStock\",\t   \"page\": msg.page\t}",
         "x": 1315,
-        "y": 960,
+        "y": 1160,
         "wires": [
             []
         ],
@@ -1634,8 +1590,8 @@
         "data": "page",
         "dataRType": "jsonata",
         "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Checkout\",\t   \"page\": msg.page,\t   \"expectedPrice\": msg.expectedPrice\t}",
-        "x": 2115,
-        "y": 1100,
+        "x": 2055,
+        "y": 1300,
         "wires": [
             []
         ],
@@ -1660,8 +1616,8 @@
         "ecpectedPrice": "",
         "ecpectedPriceRType": "num",
         "ecpectedPriceR": "0",
-        "x": 360,
-        "y": 1100,
+        "x": 340,
+        "y": 1300,
         "wires": [
             [
                 "35384adb85653353"
@@ -1691,11 +1647,170 @@
         "text": "",
         "textRType": "jsonata",
         "textR": "\"€\" & $round($sum(ctx[type=\"purchase\"].price),2)",
-        "x": 940,
-        "y": 1100,
+        "x": 920,
+        "y": 1300,
         "wires": [
             [
                 "d04e225d4cf4392c"
+            ]
+        ]
+    },
+    {
+        "id": "60c92f0bfa0702f7",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "x": 170,
+        "y": 960,
+        "wires": [
+            [
+                "e71622caf9319dc2"
+            ]
+        ]
+    },
+    {
+        "id": "06a08b556b667a15",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "price",
+                "pt": "msg",
+                "to": "lastEvent.price",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 495,
+        "y": 960,
+        "wires": [
+            [
+                "86d35755a22c3238",
+                "e71622caf9319dc2"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "86d35755a22c3238",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the Cart Icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#_desktop_cart span.hidden-sm-down",
+        "x": 750,
+        "y": 960,
+        "wires": [
+            [
+                "149493236d4ec68e"
+            ]
+        ]
+    },
+    {
+        "id": "149493236d4ec68e",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the delete icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "\"//a[text()[normalize-space()='\" & product & \"']]/following::i[text()='delete']\"",
+        "x": 960,
+        "y": 960,
+        "wires": [
+            [
+                "950360c6c2943e24"
+            ]
+        ]
+    },
+    {
+        "id": "950360c6c2943e24",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"RemoveFromCart\",\t   \"page\": msg.page,\t   \"data\": {\t       \"product\": product,\t       \"price\": price\t    }\t}",
+        "x": 1095,
+        "y": 960,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "e71622caf9319dc2",
+        "type": "RemoveFromCart",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"product\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "tmp",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "0",
+        "x": 350,
+        "y": 960,
+        "wires": [
+            [
+                "06a08b556b667a15"
             ]
         ]
     },
@@ -1722,8 +1837,8 @@
         "password": "",
         "passwordRType": "str",
         "passwordR": "alice.wang@prestahsop.com",
-        "x": 650,
-        "y": 420,
+        "x": 500,
+        "y": 200,
         "wires": [
             [
                 "875d7f9307ccf35c",
@@ -1738,8 +1853,8 @@
         "name": "Open a \\n user page",
         "page": "User1Page",
         "url": "http://localhost:8080/",
-        "x": 480,
-        "y": 420,
+        "x": 330,
+        "y": 200,
         "wires": [
             [
                 "8138e5912f4056d8"
@@ -1751,8 +1866,8 @@
         "type": "start",
         "z": "77c5dde6f1fa65d6",
         "name": "",
-        "x": 330,
-        "y": 420,
+        "x": 180,
+        "y": 200,
         "wires": [
             [
                 "ddb84f83b7f06b8f"
@@ -1778,8 +1893,8 @@
         "ecpectedPrice": "",
         "ecpectedPriceRType": "num",
         "ecpectedPriceR": "34",
-        "x": 1240,
-        "y": 400,
+        "x": 1090,
+        "y": 180,
         "wires": [
             []
         ]
@@ -1796,8 +1911,8 @@
         "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
         "dataRType": "jsonata",
         "dataR": "tmp",
-        "x": 775,
-        "y": 540,
+        "x": 625,
+        "y": 320,
         "wires": [
             []
         ],
@@ -1844,8 +1959,8 @@
         "price": "",
         "priceRType": "num",
         "priceR": "57.44",
-        "x": 890,
-        "y": 380,
+        "x": 740,
+        "y": 160,
         "wires": [
             [
                 "686117cbf722b990"
@@ -1892,8 +2007,8 @@
         "price": "",
         "priceRType": "num",
         "priceR": "11.90",
-        "x": 880,
-        "y": 460,
+        "x": 730,
+        "y": 240,
         "wires": [
             [
                 "686117cbf722b990"
@@ -1911,8 +2026,8 @@
         "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
         "dataRType": "jsonata",
         "dataR": "{\t    'type' : \"EndOfStep\",\t    'step' : 'BuyTwoProducts',\t    'page' : msg.page\t}",
-        "x": 1105,
-        "y": 400,
+        "x": 955,
+        "y": 180,
         "wires": [
             [
                 "bf2e9441aab75cde"
@@ -3133,350 +3248,137 @@
         ]
     },
     {
-        "id": "ef58ccddfcaa7c37",
-        "type": "context-init",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "format": "javascript",
-        "template": "// Add entities\nctx.populateContext([\n  ctx.Entity('r1', 'room', { subtype: 'kitchen' }),\n  // ctx.Entity('r2', 'room', { subtype: 'bedroom' }),\n  // ctx.Entity('r3', 'room', { subtype: 'bathroom' }),\n  ctx.Entity('night', 'system', { on: false })\n]);\n\n// Specifies the contexts/layers preconditions\nctx.registerQuery('Night',\n  function (entity) {\n    return entity.id == 'night' && entity.on\n  })\nctx.registerQuery('Room.WithTaps',\n  function (entity) {\n    return entity.type == 'room' &&\n      entity.subtype == 'kitchen' || entity.subtype == 'bathroom'\n  })\n\n// Specify the effect of certain events on the context\nctx.registerEffect('Time', function (data) {\n  if(data.time==\"8:00\") {\n    ctx.getEntityById('night').on = false\n  } else if (data.time == \"21:00\") {\n    ctx.getEntityById('night').on = true\n  }\n})\n\nctx.registerQuery('Room.Kitchen',\n  function (entity) {\n    return entity.type == 'room' &&\n      'kitchen' == entity.subtype\n  })",
-        "x": 160,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "f97848098db6dc08",
-        "type": "context-start",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "context": "Room.WithTaps",
-        "quantity": "all",
-        "x": 190,
-        "y": 200,
-        "wires": [
-            [
-                "5ebfa4280ba535dc",
-                "04d43f916f180798"
-            ]
-        ]
-    },
-    {
-        "id": "5ebfa4280ba535dc",
-        "type": "loop",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "list": "",
-        "from": "0",
-        "fromType": "",
-        "skip": "1",
-        "skipType": "",
-        "to": "3",
-        "toType": "",
-        "x": 430,
-        "y": 200,
-        "wires": [
-            [
-                "7ad39d3d719c8764"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "04d43f916f180798",
-        "type": "ColdRoom",
-        "z": "53a4d32a120d2c58",
+        "id": "cec04d66f0888ae4",
+        "type": "Login",
+        "z": "c4de1c8e2779ced3",
         "name": "",
         "eventType": "request",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "str",
-        "roomID": "",
-        "roomIDRType": "msg",
-        "roomIDR": "context.entity.id",
-        "x": 450,
-        "y": 140,
-        "wires": [
-            [
-                "046b46565bb2d56f"
-            ]
-        ]
-    },
-    {
-        "id": "046b46565bb2d56f",
-        "type": "ColdRoom",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "eventType": "request",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "str",
-        "roomID": "",
-        "roomIDRType": "msg",
-        "roomIDR": "context.entity.id",
-        "x": 630,
-        "y": 140,
-        "wires": [
-            [
-                "2d9b71ac3a118453"
-            ]
-        ]
-    },
-    {
-        "id": "2d9b71ac3a118453",
-        "type": "ColdRoom",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "eventType": "request",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "str",
-        "roomID": "",
-        "roomIDRType": "msg",
-        "roomIDR": "context.entity.id",
-        "x": 810,
-        "y": 140,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "7ad39d3d719c8764",
-        "type": "HotRoom",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "eventType": "request",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "str",
-        "roomID": "",
-        "roomIDRType": "msg",
-        "roomIDR": "context.entity.id",
-        "x": 600,
-        "y": 200,
-        "wires": [
-            [
-                "5ebfa4280ba535dc"
-            ]
-        ]
-    },
-    {
-        "id": "f44a69d7335b0444",
-        "type": "context-start",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "context": "Room.Kitchen",
-        "quantity": "all",
-        "x": 190,
-        "y": 360,
-        "wires": [
-            [
-                "428dccc1b3707fcc"
-            ]
-        ]
-    },
-    {
-        "id": "428dccc1b3707fcc",
-        "type": "ColdRoom",
-        "z": "53a4d32a120d2c58",
-        "g": "c6c7d5eb060dc596",
-        "name": "",
-        "eventType": "waitFor",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "msg",
-        "roomID": "context.entity.id",
-        "roomIDRType": "msg",
-        "roomIDR": "tmp",
-        "x": 450,
-        "y": 320,
-        "wires": [
-            [
-                "d51ac8d4f822e03e"
-            ]
-        ]
-    },
-    {
-        "id": "64a44e724789eba8",
-        "type": "HotRoom",
-        "z": "53a4d32a120d2c58",
-        "g": "c6c7d5eb060dc596",
-        "name": "",
-        "eventType": "block",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "msg",
-        "roomID": "context.entity.id",
-        "roomIDRType": "msg",
-        "roomIDR": "tmp",
-        "x": 440,
-        "y": 380,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "d51ac8d4f822e03e",
-        "type": "HotRoom",
-        "z": "53a4d32a120d2c58",
-        "g": "fa05d669695e8abe",
-        "name": "",
-        "eventType": "waitFor",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "msg",
-        "roomID": "context.entity.id",
-        "roomIDRType": "msg",
-        "roomIDR": "tmp",
-        "x": 700,
-        "y": 380,
-        "wires": [
-            [
-                "428dccc1b3707fcc"
-            ]
-        ]
-    },
-    {
-        "id": "cb726091fa081cfe",
-        "type": "ColdRoom",
-        "z": "53a4d32a120d2c58",
-        "g": "fa05d669695e8abe",
-        "name": "",
-        "eventType": "block",
-        "internalFields": "[\"roomID\"]",
-        "roomIDType": "msg",
-        "roomID": "context.entity.id",
-        "roomIDRType": "msg",
-        "roomIDR": "tmp",
-        "x": 710,
-        "y": 320,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "d8e988ed4670d137",
-        "type": "context-start",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "context": "Night",
-        "quantity": "all",
-        "x": 160,
-        "y": 480,
-        "wires": [
-            [
-                "d928403eee49c085"
-            ]
-        ]
-    },
-    {
-        "id": "84c2e9a74aa5aa9c",
-        "type": "start",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "payload": "",
-        "x": 150,
-        "y": 560,
-        "wires": [
-            [
-                "350587d738777e92",
-                "013274b54e9a8003"
-            ]
-        ]
-    },
-    {
-        "id": "350587d738777e92",
-        "type": "loop",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "list": "",
-        "from": "0",
-        "fromType": "",
-        "skip": "1",
-        "skipType": "",
-        "to": "3",
-        "toType": "",
-        "x": 330,
-        "y": 560,
-        "wires": [
-            [
-                "4344db48fd53e3f7"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "013274b54e9a8003",
-        "type": "loop",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "list": "",
-        "from": "0",
-        "skip": "1",
-        "to": "5",
-        "x": 330,
-        "y": 640,
-        "wires": [
-            [
-                "184473412f15a3fa"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "d928403eee49c085",
-        "type": "Vacuum",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "eventType": "block",
-        "internalFields": "[]",
-        "x": 340,
-        "y": 480,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "184473412f15a3fa",
-        "type": "Vacuum",
-        "z": "53a4d32a120d2c58",
-        "name": "",
-        "eventType": "block",
-        "internalFields": "[]",
-        "x": 520,
-        "y": 640,
-        "wires": [
-            [
-                "013274b54e9a8003"
-            ]
-        ]
-    },
-    {
-        "id": "4344db48fd53e3f7",
-        "type": "Time",
-        "z": "53a4d32a120d2c58",
-        "name": "Time (8am)",
-        "eventType": "request",
-        "internalFields": "[\"time\"]",
-        "timeType": "str",
-        "time": "",
-        "timeRType": "str",
-        "timeR": "8:00",
+        "internalFields": "[\"lib\",\"page\",\"username\",\"password\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "usernameType": "str",
+        "username": "",
+        "usernameRType": "str",
+        "usernameR": "alice.wang@prestahsop.com",
+        "passwordType": "str",
+        "password": "",
+        "passwordRType": "str",
+        "passwordR": "alice.wang@prestahsop.com",
         "x": 510,
-        "y": 560,
+        "y": 280,
         "wires": [
             [
-                "b8f9eed21991b551"
+                "a1c097b48ccfb434"
             ]
         ]
     },
     {
-        "id": "b8f9eed21991b551",
-        "type": "Time",
-        "z": "53a4d32a120d2c58",
-        "name": "Time (9pm)",
-        "eventType": "request",
-        "internalFields": "[\"time\"]",
-        "timeType": "str",
-        "time": "",
-        "timeRType": "str",
-        "timeR": "21:00",
-        "x": 710,
-        "y": 560,
+        "id": "e445fc882e3ed89f",
+        "type": "browser",
+        "z": "c4de1c8e2779ced3",
+        "name": "Open a \\n user page",
+        "page": "User1Page",
+        "url": "http://localhost:8080/",
+        "x": 340,
+        "y": 280,
         "wires": [
             [
-                "350587d738777e92"
+                "cec04d66f0888ae4"
+            ]
+        ]
+    },
+    {
+        "id": "a1c097b48ccfb434",
+        "type": "AddToCart",
+        "z": "c4de1c8e2779ced3",
+        "name": "Add to cart \\n \"Hummingbird printed sweater\"",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\",\"opt\",\"like\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "Clothes",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "Hummingbird printed sweater",
+        "quantityType": "num",
+        "quantity": "",
+        "quantityRType": "num",
+        "quantityR": "2",
+        "optType": "jsonata",
+        "opt": "",
+        "optRType": "jsonata",
+        "optR": "[{\"name\": \"Size\", \"value\": \"L\"}, {\"name\": \"Size\", \"value\": \"M\"}]",
+        "likeType": "str",
+        "like": "",
+        "likeRType": "str",
+        "likeR": "Yes",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "57.44",
+        "x": 750,
+        "y": 280,
+        "wires": [
+            [
+                "df67fd521ea240c5"
+            ]
+        ]
+    },
+    {
+        "id": "df67fd521ea240c5",
+        "type": "RemoveFromCart",
+        "z": "c4de1c8e2779ced3",
+        "name": "Remove from cart \\n \"Hummingbird printed sweater\"",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"product\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "prestashop",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "Hummingbird printed sweater",
+        "priceType": "num",
+        "price": "",
+        "priceRType": "num",
+        "priceR": "57.44",
+        "x": 1090,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a4953791d40a9a1e",
+        "type": "start",
+        "z": "c4de1c8e2779ced3",
+        "name": "",
+        "x": 170,
+        "y": 280,
+        "wires": [
+            [
+                "e445fc882e3ed89f"
             ]
         ]
     }
