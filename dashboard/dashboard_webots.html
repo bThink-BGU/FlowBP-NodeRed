@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #log {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        #log p {
+            margin: 0;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .message {
+            margin: 5px 0;
+        }
+
+        .expandable {
+            cursor: pointer;
+        }
+
+        .expandable::after {
+            content: " ▼";
+            font-size: 0.8em;
+        }
+
+        .details {
+            display: none;
+            margin-left: 20px;
+        }
+
+        .board-container {
+            width: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .board-cell {
+            width: 50px;
+            /* Set the width of the cell */
+            height: 50px;
+            /* Set the height of the cell to match the width (square) */
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            /* Adjust font size for better fit */
+            background-color: #f9f9f9;
+            /* Optional: Add a background color */
+        }
+
+        /* Style the separator line */
+        .message-separator {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="status">Status: Disconnected</div>
+    <div>
+        <input type="checkbox" id="chooseEventsRandomly" unchecked>
+        <label for="chooseEventsRandomly">Random event selection.</label>
+    </div>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Log')">Log</button>
+        <button class="tablinks" onclick="openTab(event, 'Node')">Node</button>
+    </div>
+
+    <div id="Log" class="tabcontent">
+        <div id="log"></div>
+    </div>
+
+    <div id="Node" class="tabcontent">
+        <h3>Node</h3>
+        <p>Node content goes here...</p>
+    </div>
+
+    <script>
+        // Create a WebSocket connection to the server
+        // Chnage the URL to the server URL
+        var ws = new WebSocket('ws://localhost:8085');
+
+        ws.onopen = function () {
+            document.getElementById('status').textContent = 'Status: Connected';
+        };
+
+        ws.onmessage = function (event) {
+            var data = event.data;
+
+            if (data.startsWith('Event selected:')) {
+                handleEventSelected(data);
+            } else if (data.startsWith('Started program:')) {
+                handleStartedProgram(data);
+            } else if (data.startsWith('Selectable events:')) {
+                handleSelectableEvents(data);
+            }
+        };
+        //Webots logic
+        
+        let webotsEvents = ["MoveForward","WallAhead","Stop","TurnRight","TurnLeft"];
+        function webotsDoAction(action){
+            switch(action){
+                case "MoveForward":
+                    break;
+                case "TurnRight":
+                    break;
+                case "TurnLeft":
+                    break;
+                case "WallAhead":
+                    break;
+                case "Stop":
+                    break;
+            }
+        }
+        function webotsEventAddOption(event){
+            console.log(event.data);
+            let msg = "\n";
+            for (var key in event.maybeData){
+                msg += key + ': ' + event.maybeData[key]+"\n";
+            }
+            return msg;
+        }
+
+        function addSeparator(){
+            var logDiv = document.getElementById('log');
+            var separator = document.createElement('hr');
+            separator.classList.add('message-separator');
+
+            //separator to the log
+            logDiv.appendChild(separator);
+        }
+        // Handle the "Event selected:" message. The message contains a JSON object with the event name and optional data.
+        // The optional data is displayed in a collapsible section.
+        function handleEventSelected(data) {
+            var eventText = data.substring(15); // Remove "Event selected: " prefix
+            var eventObj = JSON.parse(eventText); // Parse the JSON object
+            var eventName = eventObj.name; // Extract the event name
+
+            // TODO: add logic for webots events here
+            if(webotsEvents.includes(event.name)){
+                webotsDoAction(event.name)
+            }
+            
+            var logDiv = document.getElementById('log');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var icon = document.createElement('span');
+            icon.textContent = '🔔';
+            newMessage.appendChild(icon);
+
+            var summary = document.createElement('span');
+            summary.textContent = ' ' + eventName;
+            newMessage.appendChild(summary);
+
+            if (eventObj.maybeData != null) {
+                summary.classList.add('expandable');
+                summary.onclick = function () {
+                    detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+                };
+
+                var detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('details');
+
+                for (var key in eventObj.maybeData) {
+                    var detail = document.createElement('div');
+                    detail.textContent = key + ': ' + eventObj.maybeData[key];
+                    detailsDiv.appendChild(detail);
+                }
+
+                newMessage.appendChild(detailsDiv);
+            }
+
+            logDiv.appendChild(newMessage);
+            addSeparator();
+        }
+
+
+        // Handle the "Started program:" message. The message contains the name of the program that was started.        
+        function handleStartedProgram(data) {
+
+            clearLog();
+            var logDiv = document.getElementById('log');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var icon = document.createElement('span');
+            icon.textContent = '🚀';
+            newMessage.appendChild(icon);
+            newMessage.appendChild(document.createTextNode(' ' + data));
+
+            logDiv.appendChild(newMessage);
+        }
+
+
+        // Handle the "Selectable events:" message. The message contains a JSON array with the selectable events.
+        // The selectable events are displayed in a dropdown menu.
+        // When an event is selected, the selected event is sent to the server.
+        // The dropdown menu and the button are disabled after an event is selected.
+        function handleSelectableEvents(data) {
+
+            // Let the server know that the client is planning to select an event
+            ws.send("Wait for selection");
+
+
+            var logDiv = document.getElementById('log');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message');
+
+            var eventsText = data.substring(18); // Remove "Selectable events: " prefix
+            var eventsArray = JSON.parse(eventsText); // Parse the JSON string
+
+            var chooseEventsRandomly = document.getElementById('chooseEventsRandomly').checked;
+            if (chooseEventsRandomly) {
+                // Choose random index from the events array
+                var selectedEvent = arr.findIndex(item => item.name === "EndOfAction");
+                if (index == -1) {
+                    selectedEvent = Math.floor(Math.random() * eventsArray.length);
+                }
+                ws.send("Selected event: " + selectedEvent);
+            } else {
+                // Create a dropdown menu for event selection
+                var select = document.createElement('select');
+                select.id = 'eventSelect';
+                eventsArray.forEach(function (event) {
+                    var option = document.createElement('option');
+                    option.value = event.name;
+                    option.textContent = event.name;
+                    // TODO: add logic for webots events here
+                    if(webotsEvents.includes(event.name)){
+                        option.textContent+=webotsEventAddOption(event)
+                    }
+                    select.appendChild(option);
+                });
+
+                var selectButton = document.createElement('button');
+                selectButton.textContent = 'Select Event';
+                selectButton.onclick = function () {
+                    // Send the selected event to the server
+                    var selectedEvent = select.selectedIndex;
+                    ws.send("Selected event: " + selectedEvent);
+
+                    // Disable the dropdown menu and the button
+                    select.disabled = true;
+                    selectButton.disabled = true;
+
+                    // Remove the pannel
+                    newMessage.remove();
+                };
+
+                newMessage.appendChild(select);
+                newMessage.appendChild(selectButton);
+                logDiv.appendChild(newMessage);
+            }
+
+        }
+
+        // Clear the log
+        function clearLog() {
+            var logDiv = document.getElementById('log');
+            logDiv.innerHTML = '';
+        }
+        // Close the WebSocket connection when the window is closed
+        ws.onclose = function () {
+            document.getElementById('status').textContent = 'Status: Disconnected';
+        };
+
+
+        // Open the tab content. The tab content is hidden by default.
+        // The tab content is displayed when the tab is clicked.
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Open the default tab
+        document.getElementsByClassName('tablinks')[0].click();
+    </script>
+</body>
+
+</html>
