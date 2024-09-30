@@ -1,0 +1,1590 @@
+[
+    {
+        "id": "4ede39b5eb0ff042",
+        "type": "tab",
+        "label": "Buyer Actions",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "43e8d00a76255804",
+        "type": "group",
+        "z": "4ede39b5eb0ff042",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "b05d995a80c4a211",
+            "67cbd1c51a7406e9",
+            "50234e3d2a60d3a8",
+            "f56a3f26c02fab86",
+            "ee3933702da292c5",
+            "e36e095ba7521daf",
+            "958c0ac6ebe7e68b",
+            "b89abc33ddcde310"
+        ],
+        "x": 1058,
+        "y": 447,
+        "w": 588,
+        "h": 394
+    },
+    {
+        "id": "a1f51a5678cfc8ef",
+        "type": "group",
+        "z": "4ede39b5eb0ff042",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "3d80682946a4c06b",
+            "c394064073e9a08a",
+            "bef7f919c2d47359"
+        ],
+        "x": 874,
+        "y": 179,
+        "w": 212,
+        "h": 182
+    },
+    {
+        "id": "271414befa58bf90",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "category",
+                "pt": "msg",
+                "to": "lastEvent.category",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "quantity",
+                "pt": "msg",
+                "to": "lastEvent.quantity",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "options",
+                "pt": "msg",
+                "to": "lastEvent.opt",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "like",
+                "pt": "msg",
+                "to": "lastEvent.like",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "price",
+                "pt": "msg",
+                "to": "lastEvent.price",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 455,
+        "y": 620,
+        "wires": [
+            [
+                "38266bd091ba4a07",
+                "533f3282e40a179f"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "34a81a37074082a8",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 170,
+        "y": 620,
+        "wires": [
+            [
+                "38266bd091ba4a07"
+            ]
+        ]
+    },
+    {
+        "id": "38266bd091ba4a07",
+        "type": "AddToCart",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\",\"quantity\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "tmp",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "tmp",
+        "quantityType": "num",
+        "quantity": "",
+        "quantityRType": "num",
+        "quantityR": "0",
+        "x": 350,
+        "y": 620,
+        "wires": [
+            [
+                "271414befa58bf90"
+            ]
+        ]
+    },
+    {
+        "id": "e671430b10421a93",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Add To Cart",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "text=Add to cart",
+        "x": 1890,
+        "y": 620,
+        "wires": [
+            [
+                "aa7d9ce06589eae5"
+            ]
+        ]
+    },
+    {
+        "id": "7ddcfd28667a8074",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Continue shopping",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "text=Continue shopping",
+        "x": 2150,
+        "y": 620,
+        "wires": [
+            [
+                "1f06150a42dafd23"
+            ]
+        ]
+    },
+    {
+        "id": "5d7284ec94a4b6bd",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "category",
+                "pt": "msg",
+                "to": "lastEvent.category",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "quantity",
+                "pt": "msg",
+                "to": "lastEvent.quantity",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 495,
+        "y": 1160,
+        "wires": [
+            [
+                "d98e9fa7480660ab",
+                "64af955debb4ce54"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "803e5e846858172e",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 170,
+        "y": 1160,
+        "wires": [
+            [
+                "64af955debb4ce54"
+            ]
+        ]
+    },
+    {
+        "id": "d98e9fa7480660ab",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the category",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "$join([\"text=\", category])",
+        "x": 750,
+        "y": 1160,
+        "wires": [
+            [
+                "a4ec9b6989354139"
+            ]
+        ]
+    },
+    {
+        "id": "64af955debb4ce54",
+        "type": "VarifyNotInStock",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"category\",\"product\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "categoryType": "str",
+        "category": "",
+        "categoryRType": "str",
+        "categoryR": "tmp",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "tmp",
+        "x": 370,
+        "y": 1160,
+        "wires": [
+            [
+                "5d7284ec94a4b6bd"
+            ]
+        ]
+    },
+    {
+        "id": "1d74b8c93ca57b87",
+        "type": "AssertIsDisabled",
+        "z": "4ede39b5eb0ff042",
+        "name": "Check that \\n Add to cart is diabled",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "str",
+        "lib": "playwright",
+        "libRType": "str",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "text=Add to cart",
+        "x": 1160,
+        "y": 1160,
+        "wires": [
+            [
+                "3f5a3b82e382748b"
+            ]
+        ]
+    },
+    {
+        "id": "a4ec9b6989354139",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the product",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "\"xpath=//a[contains(.,'\" & product & \"')]\"",
+        "x": 950,
+        "y": 1160,
+        "wires": [
+            [
+                "1d74b8c93ca57b87"
+            ]
+        ]
+    },
+    {
+        "id": "499d540c2227d8ed",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the product",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "\"xpath=//a[contains(.,'\" & product & \"')]\"",
+        "x": 930,
+        "y": 620,
+        "wires": [
+            [
+                "f56a3f26c02fab86",
+                "ee3933702da292c5",
+                "67cbd1c51a7406e9"
+            ]
+        ]
+    },
+    {
+        "id": "533f3282e40a179f",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the category",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "$join([\"text=\", category])",
+        "x": 770,
+        "y": 620,
+        "wires": [
+            [
+                "499d540c2227d8ed"
+            ]
+        ]
+    },
+    {
+        "id": "b05d995a80c4a211",
+        "type": "SelectOption",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "Set \\n Option",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"value\"]",
+        "libType": "str",
+        "lib": "playwright",
+        "libRType": "str",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "\"//span[contains(text(),'\"& opt.name &\"')]/following-sibling::select\"",
+        "valueType": "str",
+        "value": "",
+        "valueRType": "jsonata",
+        "valueR": "opt[0].value",
+        "x": 1394,
+        "y": 500,
+        "wires": [
+            [
+                "67cbd1c51a7406e9"
+            ]
+        ]
+    },
+    {
+        "id": "67cbd1c51a7406e9",
+        "type": "loop",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "",
+        "list": "msg.option",
+        "listType": "jsonata",
+        "from": "0",
+        "fromType": "str",
+        "skip": "1",
+        "skipType": "str",
+        "to": "$count(options)",
+        "toType": "jsonata",
+        "x": 1154,
+        "y": 500,
+        "wires": [
+            [
+                "50234e3d2a60d3a8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "50234e3d2a60d3a8",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "opt",
+                "pt": "msg",
+                "to": "$eval(\"options[\"& count & \"]\")[0]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1259,
+        "y": 500,
+        "wires": [
+            [
+                "b05d995a80c4a211"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "f56a3f26c02fab86",
+        "type": "Fill",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "Fill \\n Quantity",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"text\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#quantity_wanted",
+        "textType": "str",
+        "text": "",
+        "textRType": "msg",
+        "textR": "quantity",
+        "x": 1144,
+        "y": 620,
+        "wires": [
+            [
+                "36550ac086fe3974"
+            ]
+        ]
+    },
+    {
+        "id": "ee3933702da292c5",
+        "type": "if-then-else",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "condition": "msg.like == 'Yes'",
+        "x": 1190,
+        "y": 720,
+        "wires": [
+            [
+                "e36e095ba7521daf"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e36e095ba7521daf",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "Click the \\n Like heart",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "//button[@class='wishlist-button-add wishlist-button-product']//i[1]",
+        "x": 1380,
+        "y": 700,
+        "wires": [
+            [
+                "958c0ac6ebe7e68b"
+            ]
+        ]
+    },
+    {
+        "id": "958c0ac6ebe7e68b",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "Click the \\n \"My Wishlist\"",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "//li[@class='wishlist-list-item']//p[1]",
+        "x": 1550,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fc613cb1eef8f705",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 170,
+        "y": 1300,
+        "wires": [
+            [
+                "1823f83b4ac3d7df"
+            ]
+        ]
+    },
+    {
+        "id": "35384adb85653353",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "category",
+                "pt": "msg",
+                "to": "lastEvent.category",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "quantity",
+                "pt": "msg",
+                "to": "lastEvent.quantity",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "expectedPrice",
+                "pt": "msg",
+                "to": "lastEvent.expectedPrice",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 435,
+        "y": 1300,
+        "wires": [
+            [
+                "8e74543aa7b75004",
+                "1823f83b4ac3d7df"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "8e74543aa7b75004",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the Cart Icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#_desktop_cart span.hidden-sm-down",
+        "x": 750,
+        "y": 1300,
+        "wires": [
+            [
+                "22524da885c16ea4"
+            ]
+        ]
+    },
+    {
+        "id": "d04e225d4cf4392c",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Proceed to Checkout",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "div.cart-grid-right a",
+        "x": 1120,
+        "y": 1300,
+        "wires": [
+            [
+                "f6f71d183a0374a1"
+            ]
+        ]
+    },
+    {
+        "id": "f6f71d183a0374a1",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Continue",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "div.clearfix > button",
+        "x": 1320,
+        "y": 1300,
+        "wires": [
+            [
+                "ce21a816de9cbc59"
+            ]
+        ]
+    },
+    {
+        "id": "ce21a816de9cbc59",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Delivery Step button",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#checkout-delivery-step button",
+        "x": 1520,
+        "y": 1300,
+        "wires": [
+            [
+                "6020c2df4028a255"
+            ]
+        ]
+    },
+    {
+        "id": "6020c2df4028a255",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Agree to terms",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#conditions_to_approve\\[terms-and-conditions\\]",
+        "x": 1740,
+        "y": 1300,
+        "wires": [
+            [
+                "53dbb255f45c99b8"
+            ]
+        ]
+    },
+    {
+        "id": "53dbb255f45c99b8",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n Place Order",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#payment-confirmation button",
+        "x": 1930,
+        "y": 1300,
+        "wires": [
+            [
+                "0a678d07f4eb6dda"
+            ]
+        ]
+    },
+    {
+        "id": "5d0bff014cf778e5",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 190,
+        "y": 100,
+        "wires": [
+            [
+                "2debe145c1a4d0da"
+            ]
+        ]
+    },
+    {
+        "id": "c6322e5426776fd4",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "username",
+                "pt": "msg",
+                "to": "lastEvent.username",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "password",
+                "pt": "msg",
+                "to": "lastEvent.password",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 435,
+        "y": 240,
+        "wires": [
+            [
+                "e89bf639096a9805",
+                "5aefb030b5cb9f4a"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "d5b83e1362c7bc43",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data\\nfrom the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 435,
+        "y": 100,
+        "wires": [
+            [
+                "2debe145c1a4d0da",
+                "1e7d06f674ec7c7f"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "fafb51955c0b4968",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "payload": "{}",
+        "x": 190,
+        "y": 240,
+        "wires": [
+            [
+                "5aefb030b5cb9f4a"
+            ]
+        ]
+    },
+    {
+        "id": "5aefb030b5cb9f4a",
+        "type": "Login",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"username\",\"password\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "usernameType": "str",
+        "username": "",
+        "usernameRType": "str",
+        "usernameR": "tmp",
+        "passwordType": "str",
+        "password": "",
+        "passwordRType": "str",
+        "passwordR": "tmp",
+        "x": 350,
+        "y": 240,
+        "wires": [
+            [
+                "c6322e5426776fd4"
+            ]
+        ]
+    },
+    {
+        "id": "2debe145c1a4d0da",
+        "type": "Logout",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "d5b83e1362c7bc43"
+            ]
+        ]
+    },
+    {
+        "id": "e89bf639096a9805",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click Login",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#_desktop_user_info span",
+        "x": 770,
+        "y": 240,
+        "wires": [
+            [
+                "c394064073e9a08a",
+                "3d80682946a4c06b"
+            ]
+        ]
+    },
+    {
+        "id": "1e7d06f674ec7c7f",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click Logout",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "a.logout",
+        "x": 770,
+        "y": 100,
+        "wires": [
+            [
+                "f3cf80e0525fcd24"
+            ]
+        ]
+    },
+    {
+        "id": "ecd86f956b38f234",
+        "type": "KeyboardDown",
+        "z": "4ede39b5eb0ff042",
+        "name": "Press Enter",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"key\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "keyType": "str",
+        "key": "",
+        "keyRType": "str",
+        "keyR": "Enter",
+        "x": 1290,
+        "y": 240,
+        "wires": [
+            [
+                "fb3809ebd760ed3c"
+            ]
+        ]
+    },
+    {
+        "id": "f3cf80e0525fcd24",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Logout\",\t   \"page\": msg.page\t}",
+        "x": 895,
+        "y": 100,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "fb3809ebd760ed3c",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Login\",\t   \"page\": page,\t   \"data\": {\t       \"username\": username,\t       \"password\": password\t       }\t}",
+        "x": 1405,
+        "y": 240,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "cb3d85e0b8015524",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{     'type' : \"EndOfStep\",     'step' : 'FillLoginDetails',     'page' : msg.page }",
+        "dataRType": "jsonata",
+        "dataR": "{     'type' : \"EndOfStep\",     'step' : 'FillLoginDetails',     'page' : msg.page }",
+        "x": 1145,
+        "y": 240,
+        "wires": [
+            [
+                "ecd86f956b38f234"
+            ]
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
+    },
+    {
+        "id": "3d80682946a4c06b",
+        "type": "Type",
+        "z": "4ede39b5eb0ff042",
+        "g": "a1f51a5678cfc8ef",
+        "name": "Type password",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"text\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#field-password",
+        "textType": "str",
+        "text": "",
+        "textRType": "msg",
+        "textR": "password",
+        "x": 980,
+        "y": 260,
+        "wires": [
+            [
+                "cb3d85e0b8015524"
+            ]
+        ]
+    },
+    {
+        "id": "c394064073e9a08a",
+        "type": "Type",
+        "z": "4ede39b5eb0ff042",
+        "g": "a1f51a5678cfc8ef",
+        "name": "Type username",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"text\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#field-email",
+        "textType": "str",
+        "text": "",
+        "textRType": "msg",
+        "textR": "username",
+        "x": 980,
+        "y": 220,
+        "wires": [
+            [
+                "cb3d85e0b8015524"
+            ]
+        ]
+    },
+    {
+        "id": "bef7f919c2d47359",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "g": "a1f51a5678cfc8ef",
+        "name": "",
+        "eventType": "block",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillLoginDetails',\t    'page' : msg.page\t}",
+        "dataRType": "jsonata",
+        "dataR": "tmp",
+        "x": 915,
+        "y": 320,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
+    },
+    {
+        "id": "b89abc33ddcde310",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "g": "43e8d00a76255804",
+        "name": "",
+        "eventType": "block",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillAddToCartDetails',\t    'page' : msg.page\t}",
+        "dataRType": "jsonata",
+        "dataR": "tmp",
+        "x": 1105,
+        "y": 800,
+        "wires": [
+            []
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
+    },
+    {
+        "id": "36550ac086fe3974",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "jsonata",
+        "data": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillASdToCartDetails',\t    'page' : msg.page\t}",
+        "dataRType": "jsonata",
+        "dataR": "{\t    'type' : \"EndOfStep\",\t    'step' : 'FillAddToCartDetails',\t    'page' : msg.page\t}",
+        "x": 1705,
+        "y": 620,
+        "wires": [
+            [
+                "e671430b10421a93"
+            ]
+        ],
+        "icon": "font-awesome/fa-pause",
+        "l": false
+    },
+    {
+        "id": "1f06150a42dafd23",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"AddToCart\",\t   \"page\": page,\t   \"data\": {\t       \"category\": category,\t       \"product\": product,\t       \"quantity\": quantity,\t       \"like\": like,\t       \"price\": price\t\t       }\t}",
+        "x": 2295,
+        "y": 620,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "3f5a3b82e382748b",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"VerifyNotInStock\",\t   \"page\": msg.page\t}",
+        "x": 1315,
+        "y": 1160,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "0a678d07f4eb6dda",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"Checkout\",\t   \"page\": msg.page,\t   \"expectedPrice\": msg.expectedPrice\t}",
+        "x": 2045,
+        "y": 1300,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "1823f83b4ac3d7df",
+        "type": "Checkout",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"ecpectedPrice\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "x": 340,
+        "y": 1300,
+        "wires": [
+            [
+                "35384adb85653353"
+            ]
+        ]
+    },
+    {
+        "id": "22524da885c16ea4",
+        "type": "AssertText",
+        "z": "4ede39b5eb0ff042",
+        "name": "Check \\n Total Sum",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\",\"text\"]",
+        "libType": "str",
+        "lib": "playwright",
+        "libRType": "str",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "//span[text()='Total (tax incl.)']/following-sibling::span",
+        "textType": "str",
+        "text": "",
+        "textRType": "jsonata",
+        "textR": "\"€\" & $formatNumber($exists(ctx[type=\"purchase\"]) ? $sum(ctx[type=\"purchase\"].price) : 0, \"0.00\")\t",
+        "x": 920,
+        "y": 1300,
+        "wires": [
+            [
+                "d04e225d4cf4392c"
+            ]
+        ]
+    },
+    {
+        "id": "60c92f0bfa0702f7",
+        "type": "start",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "x": 170,
+        "y": 960,
+        "wires": [
+            [
+                "e71622caf9319dc2"
+            ]
+        ]
+    },
+    {
+        "id": "06a08b556b667a15",
+        "type": "change",
+        "z": "4ede39b5eb0ff042",
+        "name": "Take data from the event",
+        "rules": [
+            {
+                "t": "set",
+                "p": "page",
+                "pt": "msg",
+                "to": "lastEvent.page",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "product",
+                "pt": "msg",
+                "to": "lastEvent.product",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 495,
+        "y": 960,
+        "wires": [
+            [
+                "86d35755a22c3238",
+                "e71622caf9319dc2"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "86d35755a22c3238",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the Cart Icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "str",
+        "locatorR": "#_desktop_cart span.hidden-sm-down",
+        "x": 750,
+        "y": 960,
+        "wires": [
+            [
+                "149493236d4ec68e"
+            ]
+        ]
+    },
+    {
+        "id": "149493236d4ec68e",
+        "type": "Click",
+        "z": "4ede39b5eb0ff042",
+        "name": "Click \\n the delete icon",
+        "eventType": "request",
+        "internalFields": "[\"lib\",\"page\",\"locator\"]",
+        "libType": "select",
+        "lib": "playwright",
+        "libRType": "select",
+        "libR": "playwright",
+        "pageType": "msg",
+        "page": "page",
+        "pageRType": "msg",
+        "pageR": "page",
+        "locatorType": "str",
+        "locator": "",
+        "locatorRType": "jsonata",
+        "locatorR": "\"//a[text()[normalize-space()='\" & product & \"']]/following::i[text()='delete']\"",
+        "x": 960,
+        "y": 960,
+        "wires": [
+            [
+                "950360c6c2943e24"
+            ]
+        ]
+    },
+    {
+        "id": "950360c6c2943e24",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"EndOfAction\",\t   \"action\": \"RemoveFromCart\",\t   \"page\": page,\t   \"data\": {\t       \"product\": product\t    }\t}",
+        "x": 1095,
+        "y": 960,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "e71622caf9319dc2",
+        "type": "RemoveFromCart",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "waitFor",
+        "internalFields": "[\"lib\",\"page\",\"product\",\"price\"]",
+        "libType": "str",
+        "lib": "prestashop",
+        "libRType": "str",
+        "libR": "tmp",
+        "pageType": "msg",
+        "page": "",
+        "pageRType": "msg",
+        "pageR": "tmp",
+        "productType": "str",
+        "product": "",
+        "productRType": "str",
+        "productR": "tmp",
+        "x": 350,
+        "y": 960,
+        "wires": [
+            [
+                "06a08b556b667a15"
+            ]
+        ]
+    },
+    {
+        "id": "aa7d9ce06589eae5",
+        "type": "Marker",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "eventType": "request",
+        "internalFields": "[\"data\"]",
+        "dataType": "msg",
+        "data": "page",
+        "dataRType": "jsonata",
+        "dataR": "{\t   \"type\": \"ActionEffect\",\t   \"action\": \"AddToCart\",\t   \"page\": page,\t   \"data\": {\t       \"category\": category,\t       \"product\": product,\t       \"quantity\": quantity,\t       \"like\": like,\t       \"price\": price,\t       \"page\": page\t\t       }\t}",
+        "x": 2005,
+        "y": 620,
+        "wires": [
+            [
+                "7ddcfd28667a8074"
+            ]
+        ],
+        "icon": "font-awesome/fa-flag-checkered",
+        "l": false
+    },
+    {
+        "id": "bf180f4142234a53",
+        "type": "comment",
+        "z": "4ede39b5eb0ff042",
+        "name": "",
+        "info": "The flag marks the moment that this action affects the state",
+        "x": 2000,
+        "y": 560,
+        "wires": []
+    }
+]

@@ -220,26 +220,38 @@ function execute(node, token) {
 
         return []
       case "loop":
+        // TODO: add support for specifying the counter name
+
+        const to = parseInt(getField(node, cloneToken, "to"));;
+        const skip = parseInt(getField(node, cloneToken, "skip"));
+        const from = parseInt(getField(node, cloneToken, "from"));
+
+        bp.log.info("from: {0}, to: {1}, skip: {2}", from, to, skip)
+
         if ("count" in cloneToken) {
-          if (cloneToken.count + 1 < node.to) {
-            cloneToken.count += parseInt(node.skip)
+          if (cloneToken.count + 1 < to) {
+            cloneToken.count += skip;
             return [cloneToken, undefined]
           } else {
             delete cloneToken.count
             return [undefined, cloneToken]
           }
         } else {
-          cloneToken.count = parseInt(node.from)
-          return [cloneToken, undefined]
+          if (cloneToken.count + 1 < to) {
+            cloneToken.count = from;
+            return [cloneToken, undefined]
+          } else {
+            return [undefined, undefined]
+          }
         }
 
       case "if-then-else":
         if (node.condition) {
-          let condition = node.condition.replace(/tkn\./g, 'cloneToken.')
+          let condition = node.condition.replace(/msg\./g, 'cloneToken.')
           if (eval(condition)) {  // "3333+1" -> 3334
-            return [cloneToken, undefined]
-          } else {
             return [undefined, cloneToken]
+          } else {
+            return [cloneToken, undefined]
           }
         }
 
@@ -274,6 +286,7 @@ function execute(node, token) {
         return [cloneToken]
       case "browser":
         event = sync({ request: bp.Event("StartBrowser", { lib: "playwright", url: String(node.url), page: String(node.page) }) })
+        //java.lang.Thread.sleep(2000)
         cloneToken.page = node.page
         return [cloneToken]
       default:
@@ -281,7 +294,15 @@ function execute(node, token) {
           this[node.type](node, cloneToken)
         } else {
           if (node.eventType == 'request') {
-            event = sync({ request: defaultEventDefinition(node, cloneToken) })
+            event = defaultEventDefinition(node, cloneToken)
+            if (node.type == 'Marker') {
+              event = sync({ request:  event}, 100)
+            } else {
+              event = sync({ request: event })
+            }
+            if("playwright".equals(event.data.lib)) {
+              java.lang.Thread.sleep(500)
+            }
           } else if (node.eventType == 'waitFor') {
             event = sync({ waitFor: defaultEventSetDefinition(node, cloneToken) })
           } else if (node.eventType == 'block') {
@@ -310,7 +331,7 @@ function execute(node, token) {
 function defaultEventSetDefinition(node, msg) {
   function getEventSet(name, expr, _msg) {
     const msg = Object.assign({}, _msg);
-    return bp.EventSet(name+"/"+JSON.stringify(_msg), function (e) {
+    return bp.EventSet(name + "/" + JSON.stringify(_msg), function (e) {
       const eventDataCopy = Object.assign({}, e.data, { event: e.name, msg: msg });
       try {
         return !!RED.util.evaluateJSONataExpression(expr, eventDataCopy);
@@ -385,6 +406,17 @@ function getField(node, msg, field) {
       return JSON.parse(node[field]);
     case 'jsonata':
       try {
+        msg = RED.util.cloneMessage(msg);
+
+        // Cretae an array of the context entry objects
+        msg.ctx = [];
+        var javaIterator = bp.store.entrySet().iterator();
+        while (javaIterator.hasNext()) {
+          var entry = javaIterator.next();
+          msg.ctx.push(entry.getValue());
+        }
+
+
         let expr = RED.util.prepareJSONataExpression(node[field], node);
         return RED.util.evaluateJSONataExpression(expr, msg)
       } catch (err) {

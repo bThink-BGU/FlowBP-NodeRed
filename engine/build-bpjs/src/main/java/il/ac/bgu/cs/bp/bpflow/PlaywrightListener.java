@@ -12,6 +12,7 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.assertions.PlaywrightAssertions;
 
 import il.ac.bgu.cs.bp.bpjs.execution.listeners.BProgramRunnerListener;
 import il.ac.bgu.cs.bp.bpjs.model.BEvent;
@@ -31,7 +32,7 @@ public class PlaywrightListener implements BProgramRunnerListener {
         try {
             var eventData = (NativeObject) theEvent.getData();
 
-            if (eventData != null && eventData.containsKey("lib") && eventData.get("lib").equals("playwright")) {
+            if (eventData != null && eventData.containsKey("lib") && "playwright".equals(eventData.get("lib"))) {
                 System.err.println("Playwright event: " + theEvent);
 
                 Page page = null;
@@ -71,18 +72,49 @@ public class PlaywrightListener implements BProgramRunnerListener {
                     page.type(String.valueOf(eventData.get("locator")), String.valueOf(eventData.get("text")));
                 } else if (theEvent.name.equals("KeyboardDown")) {
                     page.keyboard().down(String.valueOf(eventData.get("key")));
-                    // } else if (theEvent.name.equals("WaitForSelector")) {
-                    // page.waitForSelector(String.valueOf(eventData.get("selector")));
-                    // } else if (theEvent.name.equals("WaitForTimeout")) {
-                    // page.waitForTimeout(Integer.parseInt(String.valueOf(eventData.get("timeout"))));
-                    // } else if (theEvent.name.equals("Screenshot")) {
-                    // page.screenshot(
-                    // new
-                    // Page.ScreenshotOptions().setPath(Paths.get(String.valueOf(eventData.get("path")))));
+                } else if (theEvent.name.equals("AssertNotOnPage")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).hasCount(0);
+                } else if (theEvent.name.equals("AssertIsDisabled")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).isDisabled();
                 }
-
+                else if (theEvent.name.equals("AssertIsEnabled")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).isEnabled();
+                } else if (theEvent.name.equals("AssertIsChecked")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).isChecked();
+                } else if (theEvent.name.equals("AssertIsNotChecked")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).not().isChecked();
+                } else if (theEvent.name.equals("AssertIsVisible")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).isVisible();
+                } else if (theEvent.name.equals("AssertIsNotVisible")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).not().isVisible();
+                } else if (theEvent.name.equals("AssertText")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    String text = String.valueOf(eventData.get("text"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).hasText(text);
+                } else if (theEvent.name.equals("AssertValue")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    String value = String.valueOf(eventData.get("value"));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).hasValue(value);
+                } else if (theEvent.name.equals("AssertTitle")) {
+                    String title = String.valueOf(eventData.get("title"));
+                    PlaywrightAssertions.assertThat(page).hasTitle(title);
+                } else if (theEvent.name.equals("AssertUrl")) {
+                    String url = String.valueOf(eventData.get("url"));
+                    PlaywrightAssertions.assertThat(page).hasURL(url);
+                } else if (theEvent.name.equals("AssertCount")) {
+                    String locator = String.valueOf(eventData.get("locator"));
+                    int count = Integer.parseInt(String.valueOf(eventData.get("count")));
+                    PlaywrightAssertions.assertThat(page.locator(locator)).hasCount(count);
+                } 
             }
-        } catch (ClassCastException e) {
+        } catch (ClassCastException ignored) {
         }
     }
 
